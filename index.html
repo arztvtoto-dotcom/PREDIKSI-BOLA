@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Togel Vision Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0f1115;
+            color: #fff;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1a1d24;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: #00c3ff;
+            box-shadow: 0 0 0 1px #00c3ff;
+        }
+        /* Toast notification style */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+        }
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;} 
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;} 
+            to {bottom: 0; opacity: 0;}
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <div>
+                <img id="appLogo" src="https://cdn.areabermain.club/assets/cdn/az9/2025/01/12/20250112/be94591721bee27f10602be64e6b2d5a/logo-9.png" alt="Tool Logo" class="h-12 mb-2">
+                <p class="text-gray-400 text-sm mt-1">Generate beautifully formatted HTML tables for predictions</p>
+            </div>
+            <div class="bg-[#1a1d24] px-4 py-2 rounded-full text-xs text-gray-400 border border-gray-800">
+                Timezone: Asia/Bangkok
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Column: Controls -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Configuration Card -->
+                <div class="bg-[#1a1d24] border border-gray-800 rounded-lg shadow-lg overflow-hidden">
+                    <div class="border-b border-gray-800 p-4">
+                        <h2 class="text-white flex items-center gap-2 font-semibold">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00c3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                            Configuration
+                        </h2>
+                    </div>
+                    <div class="p-5 space-y-4">
+                        <div class="space-y-2">
+                            <label class="text-xs text-gray-400 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+                                Select Brand
+                            </label>
+                            <select id="brandSelect" onchange="changeBrand()" class="w-full bg-[#0b0f19] border border-gray-700 text-white h-9 px-3 text-sm rounded focus:border-[#00c3ff]">
+                                <option value="TVTOTO">TVTOTO</option>
+                                <option value="JEDERWD">JEDERWD</option>
+                                <option value="FATCAI">FATCAI</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs text-gray-400 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                                Match Date (Revisi Tanggal)
+                            </label>
+                            <input type="text" id="configDate" class="w-full bg-[#0b0f19] border border-gray-700 text-white h-9 px-3 text-sm rounded focus:border-[#00c3ff]">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label class="text-xs text-gray-400">Background Color</label>
+                                <div class="flex gap-2">
+                                    <input type="color" id="configBgColor" value="#990000" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded">
+                                    <input type="text" id="configBgColorText" value="#990000" class="bg-[#0b0f19] border border-gray-700 text-white h-8 px-2 text-xs flex-1 rounded focus:border-[#00c3ff]">
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs text-gray-400">Text Color</label>
+                                <div class="flex gap-2">
+                                    <input type="color" id="configTextColor" value="#ffcc00" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded">
+                                    <input type="text" id="configTextColorText" value="#ffcc00" class="bg-[#0b0f19] border border-gray-700 text-white h-8 px-2 text-xs flex-1 rounded focus:border-[#00c3ff]">
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs text-gray-400">Header BG Color</label>
+                                <div class="flex gap-2">
+                                    <input type="color" id="configHeaderColor" value="#660000" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded">
+                                    <input type="text" id="configHeaderColorText" value="#660000" class="bg-[#0b0f19] border border-gray-700 text-white h-8 px-2 text-xs flex-1 rounded focus:border-[#00c3ff]">
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs text-gray-400">Marquee BG Color</label>
+                                <div class="flex gap-2">
+                                    <input type="color" id="configMarqueeColor" value="#660000" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded">
+                                    <input type="text" id="configMarqueeColorText" value="#660000" class="bg-[#0b0f19] border border-gray-700 text-white h-8 px-2 text-xs flex-1 rounded focus:border-[#00c3ff]">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Card -->
+                <div class="bg-[#1a1d24] border border-gray-800 rounded-lg shadow-lg overflow-hidden">
+                    <div class="border-b border-gray-800 p-4">
+                        <h2 class="text-white flex items-center gap-2 font-semibold">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00c3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
+                            Input Data
+                        </h2>
+                    </div>
+                    <div class="p-5 space-y-4">
+                        <textarea id="inputText" class="w-full bg-[#0b0f19] border border-gray-700 text-gray-300 font-mono text-xs min-h-[300px] p-3 rounded resize-none focus:border-[#00c3ff]" placeholder="Paste your matches here...">ENGLISH PREMIER LEAGUE
+13/09 18:30 WIB Arsenal vs Nottingham Forest 2-0
+13/09 21:00 WIB Bournemouth AFC vs Brighton & Hove Albion 1-2
+13/09 21:00 WIB Crystal Palace vs Sunderland 2-1
+
+ITALY SERIE A
+13/09 20:00 WIB Cagliari vs Parma Calcio 1-2
+13/09 23:00 WIB Juventus vs Inter Milan 1-1</textarea>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="generateHtml()" class="bg-[#00c3ff] hover:bg-[#0099cc] text-white font-semibold py-2 px-4 rounded flex items-center justify-center gap-2 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                                Generate
+                            </button>
+                            <button onclick="clearInput()" class="bg-transparent border border-gray-700 text-gray-400 hover:bg-[#2a2e36] hover:text-white py-2 px-4 rounded flex items-center justify-center gap-2 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+                                Clear
+                            </button>
+                        </div>
+
+                        <div id="actionButtons" class="grid grid-cols-2 gap-3 pt-2 hidden">
+                            <button onclick="copyHtml()" class="bg-[#2a2e36] text-white hover:bg-[#353a45] py-2 px-4 rounded flex items-center justify-center gap-2 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                                Copy HTML
+                            </button>
+                            <button onclick="downloadHtml()" class="bg-[#2a2e36] text-white hover:bg-[#353a45] py-2 px-4 rounded flex items-center justify-center gap-2 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                                Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Preview -->
+            <div class="lg:col-span-7">
+                <div class="bg-[#1a1d24] border border-gray-800 rounded-lg shadow-lg overflow-hidden h-full flex flex-col min-h-[600px]">
+                    <div class="border-b border-gray-800 p-4 flex justify-between items-center">
+                        <h2 class="text-white flex items-center gap-2 font-semibold">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00c3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg>
+                            Preview
+                        </h2>
+                        <div class="flex bg-[#0b0f19] rounded border border-gray-800 p-1">
+                            <button onclick="setPreviewMode('preview')" id="btnPreview" class="px-3 py-1 text-xs rounded bg-[#00c3ff] text-white">Preview</button>
+                            <button onclick="setPreviewMode('code')" id="btnCode" class="px-3 py-1 text-xs rounded text-gray-400 hover:text-white">Source</button>
+                        </div>
+                    </div>
+                    <div class="flex-1 bg-[#0b0f19] relative overflow-hidden p-4">
+                        <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="opacity-20 mb-4"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m10 13-2 2 2 2"/><path d="m14 17 2-2-2-2"/></svg>
+                            <p>Generate HTML to see preview</p>
+                        </div>
+                        
+                        <div id="previewContainer" class="hidden w-full h-full bg-white rounded-lg overflow-hidden shadow-inner">
+                            <iframe id="previewFrame" class="w-full h-full border-0"></iframe>
+                        </div>
+                        
+                        <div id="codeContainer" class="hidden w-full h-full bg-[#0b0f19] border border-gray-800 rounded p-4 overflow-auto custom-scrollbar">
+                            <pre id="codeBlock" class="text-xs font-mono text-green-400 whitespace-pre-wrap break-all"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        let generatedHtml = "";
+
+        // Brand Data Configuration
+        const BRAND_CONFIG = {
+            'TVTOTO': {
+                logo: 'https://jamkos-a.com/tvtoto/logotvtoto.jpg',
+                colors: {
+                    bg: '#990000',
+                    text: '#ffcc00',
+                    header: '#660000',
+                    marquee: '#660000'
+                },
+                title: 'PREDIKSI TVTOTO'
+            },
+            'JEDERWD': {
+                logo: 'https://jederwd88495.com/resources/images/logo.png',
+                colors: {
+                    bg: '#0097b2', // Cyan/Teal from image
+                    text: '#ffffff', // White text for better contrast on teal
+                    header: '#006d80', // Darker teal
+                    marquee: '#004d5a' // Even darker teal
+                },
+                title: 'PREDIKSI FATCAI'
+            },
+            'FATCAI': {
+                logo: 'https://fatcai88495.com/resources/images/logo.png',
+                colors: {
+                    bg: '#fafe06', // Cyan/Teal from image
+                    text: '#000000', // White text for better contrast on teal
+                    header: '#b7b922', // Darker teal
+                    marquee: '#efff0f' // Even darker teal
+                },
+                title: 'PREDIKSI JEDERWD'    
+            }
+        };
+
+        // Brand Change Handler
+        function changeBrand() {
+            const brand = document.getElementById('brandSelect').value;
+            const config = BRAND_CONFIG[brand];
+
+            if (config) {
+                // Update Color Inputs
+                updateColorInput('configBgColor', 'configBgColorText', config.colors.bg);
+                updateColorInput('configTextColor', 'configTextColorText', config.colors.text);
+                updateColorInput('configHeaderColor', 'configHeaderColorText', config.colors.header);
+                updateColorInput('configMarqueeColor', 'configMarqueeColorText', config.colors.marquee);
+                
+                showToast(`Switched to ${brand} theme`);
+            }
+        }
+
+        function updateColorInput(pickerId, textId, value) {
+            document.getElementById(pickerId).value = value;
+            document.getElementById(textId).value = value;
+        }
+
+        // Auto-date logic
+        const months = ["JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"];
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        const d1 = String(today.getDate()).padStart(2, '0');
+        const d2 = String(tomorrow.getDate()).padStart(2, '0');
+        const m1 = months[today.getMonth()];
+        const m2 = months[tomorrow.getMonth()];
+        const y = today.getFullYear();
+        const y2 = tomorrow.getFullYear();
+
+        let dateString = "";
+        if (today.getMonth() === tomorrow.getMonth() && y === y2) {
+            dateString = `${d1} - ${d2} ${m1} ${y}`;
+        } else if (y === y2) {
+            dateString = `${d1} ${m1} - ${d2} ${m2} ${y}`;
+        } else {
+            dateString = `${d1} ${m1} ${y} - ${d2} ${m2} ${y2}`;
+        }
+        document.getElementById('configDate').value = dateString;
+
+        // Sync color inputs
+        function syncColor(pickerId, textId) {
+            const picker = document.getElementById(pickerId);
+            const text = document.getElementById(textId);
+            picker.addEventListener('input', (e) => text.value = e.target.value);
+            text.addEventListener('input', (e) => picker.value = e.target.value);
+        }
+
+        syncColor('configBgColor', 'configBgColorText');
+        syncColor('configTextColor', 'configTextColorText');
+        syncColor('configHeaderColor', 'configHeaderColorText');
+        syncColor('configMarqueeColor', 'configMarqueeColorText');
+
+        // Auto-format logic
+        function formatMatchLine(line) {
+            // Remove multiple spaces and trim
+            const cleanLine = line.trim().replace(/\s+/g, ' ');
+            if (!cleanLine) return "";
+
+            // Regex to catch various formats
+            // 03/12 02:30 WIB BOURNEMOUTH AFC VS EVERTON 1 : 2
+            // Groups: 1:Date, 2:Time, 3:TeamA, 4:TeamB, 5:Score
+            const looseRegex = /^(\d{2}[\/-]\d{2})\s+(\d{2}:\d{2})(?:\s*WIB)?\s+(.+?)\s+(?:vs|VS|-|–)\s+(.+?)\s+(\d+\s*[:\-]\s*\d+)$/i;
+            
+            const match = cleanLine.match(looseRegex);
+            
+            if (match) {
+                const [_, date, time, teamA, teamB, score] = match;
+                // Normalize score format to N-N
+                const cleanScore = score.replace(/\s*[:\-]\s*/, '-');
+                return `${date} ${time} WIB ${teamA.trim()} vs ${teamB.trim()} ${cleanScore}`;
+            }
+            
+            // If it doesn't look like a match line, assume it's a header and just return trimmed
+            return cleanLine;
+        }
+
+        // Handle Paste Event
+        document.getElementById('inputText').addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            
+            const formattedText = pastedText
+                .split('\n')
+                .map(formatMatchLine)
+                .filter(line => line !== "")
+                .join('\n');
+
+            // Insert at cursor position
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            const currentText = this.value;
+            
+            const newText = currentText.substring(0, start) + formattedText + currentText.substring(end);
+            this.value = newText;
+            
+            showToast("Auto-formatted: Pasted text was automatically formatted.");
+        });
+
+        function showToast(message) {
+            const x = document.getElementById("toast");
+            x.textContent = message;
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+
+        function generateHtml() {
+            const inputText = document.getElementById('inputText').value;
+            const date = document.getElementById('configDate').value;
+            const bgColor = document.getElementById('configBgColor').value;
+            const textColor = document.getElementById('configTextColor').value;
+            const headerColor = document.getElementById('configHeaderColor').value;
+            const marqueeColor = document.getElementById('configMarqueeColor').value;
+            
+            // Get current brand config
+            const brand = document.getElementById('brandSelect').value;
+            const brandConfig = BRAND_CONFIG[brand];
+
+            if (!inputText.trim()) {
+                alert("Please paste some match data first.");
+                return;
+            }
+
+            const lines = inputText.split("\n");
+            
+            let html = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${brandConfig.title}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .snowflake {
+      position: fixed; top: -10px; z-index: 9999; color: #fff; font-size: 1em;
+      pointer-events: none; user-select: none; animation-name: fall; animation-timing-function: linear;
+    }
+    @keyframes fall {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0.3; }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: ${bgColor};
+      color: ${textColor};
+      padding: 0px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1000px; margin: 0 auto; background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 15px; padding: 20px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    .header {
+      text-align: center; margin-bottom: 30px; padding-bottom: 15px;
+      border-bottom: 2px solid ${textColor};
+    }
+    .header img {
+      max-width: 200px; margin-bottom: 10px;
+    }
+    .header .date { font-size: 18px; color: #ffffff; font-weight: 600; }
+    .marquee {
+      background-color: ${marqueeColor}; color: ${textColor}; padding: 10px;
+      margin-bottom: 25px; border-radius: 5px; font-weight: 700; text-align: center;
+      font-size: 18px; text-transform: uppercase; overflow: hidden; white-space: nowrap;
+    }
+    .marquee p { display: inline-block; animation: marquee 15s linear infinite; padding-left: 100%; }
+    @keyframes marquee {
+      0% { transform: translateX(0); } 100% { transform: translateX(-100%); }
+    }
+    .league {
+      margin-bottom: 30px; background: linear-gradient(135deg, rgba(0,0,0, 0.2), rgba(0,0,0, 0.4));
+      border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    .league-title {
+      background: linear-gradient(90deg, ${headerColor}, ${bgColor});
+      color: #ffffff; padding: 12px 15px; font-size: 18px; font-weight: 700;
+      text-align: center; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th {
+      background-color: ${headerColor}; color: ${textColor}; padding: 12px;
+      text-align: center; font-weight: 600; vertical-align: middle;
+    }
+    td {
+      padding: 10px 12px; font-weight: 700; text-align: center; vertical-align: middle;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1); word-wrap: break-word;
+    }
+    tr:nth-child(even) { background-color: rgba(0, 0, 0, 0.2); }
+    tr:hover { background-color: rgba(255, 255, 255, 0.1); }
+    @media (max-width: 768px) {
+      .container { padding: 15px; }
+      th, td { padding: 8px 10px; font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="${brandConfig.logo}" alt="Logo">
+      <div class="date">${date}</div>
+    </div>
+    <div class="marquee">
+      <p>SELAMAT DATANG DI PREDIKSI BOLA TERBARU ${brand} | ${brandConfig.title} ${date}</p>
+    </div>`;
+
+            let currentLeague = "";
+            let isTableOpen = false;
+            const matchRegex = /^(\d{2}[\/-]\d{2})\s+(\d{2}:\d{2})(?:\s*WIB)?\s+(.+?)\s+(?:vs|VS|-|–)\s+(.+?)\s+(\d+\s*[:\-]\s*\d+)$/i;
+
+            lines.forEach((line) => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+
+                const match = trimmed.match(matchRegex);
+
+                if (match) {
+                    const [_, date, time, teamA, teamB, score] = match;
+                    const cleanScore = score.replace(/\s*[:\-]\s*/, '-');
+                    
+                    if (!isTableOpen) {
+                        if (!currentLeague) {
+                            html += `
+    <div class="league">
+      <div class="league-title">MATCHES</div>
+      <table>
+        <thead><tr><th style="width: 25%">Waktu</th><th style="width: 50%">Pertandingan</th><th style="width: 25%">Prediksi</th></tr></thead>
+        <tbody>`;
+                            isTableOpen = true;
+                        }
+                    }
+                    html += `<tr><td>${date} ${time} WIB</td><td>${teamA.trim()} vs ${teamB.trim()}</td><td>${cleanScore}</td></tr>`;
+                } else {
+                    if (isTableOpen) {
+                        html += `</tbody></table></div>`;
+                        isTableOpen = false;
+                    }
+                    currentLeague = trimmed;
+                    html += `
+    <div class="league">
+      <div class="league-title">${trimmed}</div>
+      <table>
+        <thead><tr><th style="width: 25%">Waktu</th><th style="width: 50%">Pertandingan</th><th style="width: 25%">Prediksi</th></tr></thead>
+        <tbody>`;
+                    isTableOpen = true;
+                }
+            });
+
+            if (isTableOpen) {
+                html += `</tbody></table></div>`;
+            }
+
+            html += `
+  </div>
+  <script>
+    function createSnowflake() {
+      const snowflake = document.createElement("div");
+      snowflake.classList.add("snowflake");
+      snowflake.textContent = "⚽︎";
+      snowflake.style.left = Math.random() * window.innerWidth + "px";
+      snowflake.style.fontSize = Math.random() * 15 + 10 + "px";
+      snowflake.style.animationDuration = Math.random() * 5 + 5 + "s";
+      snowflake.style.opacity = Math.random();
+      document.body.appendChild(snowflake);
+      setTimeout(() => snowflake.remove(), 10000);
+    }
+    setInterval(createSnowflake, 500);
+  <\/script>
+</body>
+</html>`;
+
+            generatedHtml = html;
+            
+            // Show Preview
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('previewContainer').classList.remove('hidden');
+            document.getElementById('actionButtons').classList.remove('hidden');
+            
+            const frame = document.getElementById('previewFrame');
+            frame.srcdoc = html;
+            
+            // Update Code View
+            document.getElementById('codeBlock').textContent = html;
+            
+            if (document.getElementById('btnCode').classList.contains('bg-[#00c3ff]')) {
+                setPreviewMode('code');
+            }
+        }
+
+        function setPreviewMode(mode) {
+            const btnPreview = document.getElementById('btnPreview');
+            const btnCode = document.getElementById('btnCode');
+            const previewContainer = document.getElementById('previewContainer');
+            const codeContainer = document.getElementById('codeContainer');
+
+            if (mode === 'preview') {
+                btnPreview.classList.add('bg-[#00c3ff]', 'text-white');
+                btnPreview.classList.remove('text-gray-400');
+                btnCode.classList.remove('bg-[#00c3ff]', 'text-white');
+                btnCode.classList.add('text-gray-400');
+                
+                if(generatedHtml) {
+                    previewContainer.classList.remove('hidden');
+                    codeContainer.classList.add('hidden');
+                }
+            } else {
+                btnCode.classList.add('bg-[#00c3ff]', 'text-white');
+                btnCode.classList.remove('text-gray-400');
+                btnPreview.classList.remove('bg-[#00c3ff]', 'text-white');
+                btnPreview.classList.add('text-gray-400');
+                
+                if(generatedHtml) {
+                    previewContainer.classList.add('hidden');
+                    codeContainer.classList.remove('hidden');
+                }
+            }
+        }
+
+        function clearInput() {
+            document.getElementById('inputText').value = "";
+            generatedHtml = "";
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('previewContainer').classList.add('hidden');
+            document.getElementById('codeContainer').classList.add('hidden');
+            document.getElementById('actionButtons').classList.add('hidden');
+        }
+
+        function copyHtml() {
+            if (!generatedHtml) return;
+            navigator.clipboard.writeText(generatedHtml).then(() => showToast("Copied to clipboard!"));
+        }
+
+        function downloadHtml() {
+            if (!generatedHtml) return;
+            const element = document.createElement("a");
+            const file = new Blob([generatedHtml], {type: 'text/html'});
+            element.href = URL.createObjectURL(file);
+            element.download = `${document.getElementById('brandSelect').value.toLowerCase()}-prediksi.html`;
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+    </script>
+</body>
+</html>
