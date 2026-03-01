@@ -786,6 +786,72 @@ function downloadHtml(){
     a.download=document.getElementById('brandSelect').value.toLowerCase()+'-prediksi.html';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
+// ====== ANTI VIEW SOURCE & INSPECT PROTECTION ======
+
+// Block Ctrl+U, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+S, F12
+document.addEventListener("keydown", function (e) {
+// Ctrl+U (View Source)
+if (e.ctrlKey && e.key.toLowerCase() === "u") {
+e.preventDefault();
+return false;
+}
+
+// Ctrl+Shift+I (Inspect)
+if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "i") {
+e.preventDefault();
+return false;
+}
+
+// Ctrl+Shift+J (Console)
+if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "j") {
+e.preventDefault();
+return false;
+}
+
+// Ctrl+S (Save Page)
+if (e.ctrlKey && e.key.toLowerCase() === "s") {
+e.preventDefault();
+return false;
+}
+
+// F12 (DevTools)
+if (e.key === "F12") {
+e.preventDefault();
+return false;
+}
+});
+
+// Block Klik Kanan (Right Click)
+document.addEventListener("contextmenu", function (e) {
+e.preventDefault();
+});
+
+// Deteksi DevTools terbuka (bonus proteksi)
+(function () {
+function detectDevTools() {
+const threshold = 160;
+if (
+window.outerWidth - window.innerWidth > threshold ||
+window.outerHeight - window.innerHeight > threshold
+) {
+document.body.innerHTML = `
+<div style="
+display:flex;
+align-items:center;
+justify-content:center;
+height:100vh;
+background:#0f0505;
+color:#D4AF37;
+font-family:monospace;
+font-size:24px;
+text-align:center;">
+Developer Tools Terdeteksi<br>Akses Diblokir
+</div>
+`;
+}
+}
+setInterval(detectDevTools, 1000);
+})();
 </script>
 </body>
 </html>
