@@ -5,128 +5,173 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Togel Vision Tool</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #0f1115; color: #fff; }
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        body { font-family: 'Poppins', sans-serif; background-color: #0a0c10; color: #fff; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #1a1d24; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #4b5563; }
         textarea:focus, input:focus, select:focus { outline: none; border-color: #00c3ff; box-shadow: 0 0 0 1px #00c3ff; }
+
         /* TOAST */
         #toast {
-            visibility: hidden; min-width: 260px; background-color: #1e2330;
-            color: #fff; text-align: center; border-radius: 8px; padding: 14px 18px;
-            position: fixed; z-index: 9999; left: 50%; bottom: 30px;
-            transform: translateX(-50%); font-size: 13px;
-            border: 1px solid #374151; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            visibility:hidden;min-width:280px;
+            background:linear-gradient(135deg,#1e2330,#252b3b);
+            color:#fff;text-align:center;border-radius:10px;padding:14px 20px;
+            position:fixed;z-index:9999;left:50%;bottom:30px;transform:translateX(-50%);
+            font-size:13px;border:1px solid rgba(0,195,255,0.2);box-shadow:0 8px 32px rgba(0,0,0,.6);
         }
-        #toast.show { visibility: visible; animation: fadein 0.4s, fadeout 0.4s 2.6s; }
-        @keyframes fadein  { from {bottom: 0;  opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        #toast.show { visibility:visible; animation:fadein .4s, fadeout .4s 2.6s; }
+        @keyframes fadein  { from{bottom:0;opacity:0}  to{bottom:30px;opacity:1} }
+        @keyframes fadeout { from{bottom:30px;opacity:1} to{bottom:0;opacity:0} }
+
         /* STATUS DOT */
-        .fetch-status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-        .dot-idle    { background: #6b7280; }
-        .dot-loading { background: #f59e0b; animation: pulse-dot 1s infinite; }
-        .dot-success { background: #10b981; }
-        .dot-error   { background: #ef4444; }
-        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
-        /* NEW DATA BADGE */
-        .new-data-badge { display:none; background:#10b981; color:#fff; font-size:10px; font-weight:700; padding:1px 6px; border-radius:999px; margin-left:6px; }
+        .fetch-status-dot { width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0; }
+        .dot-idle    { background:#6b7280; }
+        .dot-loading { background:#f59e0b;animation:pdot 1s infinite; }
+        .dot-success { background:#10b981; }
+        .dot-error   { background:#ef4444; }
+        @keyframes pdot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+
+        /* BADGE */
+        .new-data-badge { display:none;background:#10b981;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:999px;margin-left:6px; }
         .new-data-badge.show { display:inline-block; }
-        /* TOGGLE SWITCH */
-        .toggle-switch { position:relative; display:inline-flex; width:36px; height:20px; cursor:pointer; }
-        .toggle-switch input { opacity:0; width:0; height:0; }
-        .toggle-slider { position:absolute; inset:0; background:#374151; border-radius:20px; transition:.3s; }
-        .toggle-slider:before { content:""; position:absolute; width:14px; height:14px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.3s; }
+
+        /* TOGGLE */
+        .toggle-switch { position:relative;display:inline-flex;width:36px;height:20px;cursor:pointer; }
+        .toggle-switch input { opacity:0;width:0;height:0; }
+        .toggle-slider { position:absolute;inset:0;background:#374151;border-radius:20px;transition:.3s; }
+        .toggle-slider:before { content:"";position:absolute;width:14px;height:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s; }
         .toggle-switch input:checked + .toggle-slider { background:#00c3ff; }
         .toggle-switch input:checked + .toggle-slider:before { transform:translateX(16px); }
+
+        /* BRAND CARD */
+        .brand-card { transition: all .25s cubic-bezier(.4,0,.2,1); }
+        .brand-card:hover { transform: scale(1.03); }
+        .brand-card.sel { transform: scale(1.04); }
+
+        /* COLOR SWATCH */
+        .swatch-wrap { position:relative;width:34px;height:34px;flex-shrink:0; }
+        .swatch-box  { width:34px;height:34px;border-radius:8px;border:2px solid rgba(255,255,255,.18);cursor:pointer;transition:transform .15s; }
+        .swatch-box:hover { transform:scale(1.1); }
+        .swatch-wrap input[type=color] { position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%; }
+
+        /* LIVE BADGE */
+        .live-badge { display:inline-flex;align-items:center;gap:4px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#10b981;font-size:9px;font-weight:700;letter-spacing:.1em;padding:2px 7px;border-radius:999px; }
+        .live-dot { width:5px;height:5px;border-radius:50%;background:#10b981;animation:pdot .8s infinite; }
+
+        /* LIVE PREVIEW BADGE */
+        .lp-badge-on  { background:rgba(0,195,255,.12);border:1px solid rgba(0,195,255,.35);color:#00c3ff; }
+        .lp-badge-off { background:rgba(107,114,128,.1);border:1px solid rgba(107,114,128,.3);color:#6b7280; }
+
+        /* DIVIDER */
+        .sdiv { display:flex;align-items:center;gap:8px;margin:2px 0; }
+        .sdiv::before,.sdiv::after { content:'';flex:1;height:1px;background:rgba(255,255,255,.07); }
+
+        /* CARD BASE */
+        .card { background:#141720;border:1px solid #1f2430;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,.4);overflow:hidden; }
+
+        /* SECTION HEADER */
+        .sec-hdr { border-bottom:1px solid #1f2430;padding:14px 18px;display:flex;align-items:center;justify-content:space-between; }
+        .sec-hdr h2 { display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px; }
+
+        /* INPUT STYLE */
+        .inp { background:#0b0f19;border:1px solid #2a3040;color:#fff;border-radius:8px;transition:border-color .2s; }
+        .inp:focus { border-color:#00c3ff;box-shadow:0 0 0 1px #00c3ff; }
+
+        /* STAT CARD */
+        .stat-card { background:#0b0f19;border:1px solid #1f2430;border-radius:10px;padding:8px 6px;text-align:center; }
+
+        /* BTN */
+        .btn-primary { background:#00c3ff;color:#000;font-weight:700;border-radius:8px;padding:9px 16px;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;font-size:13px; }
+        .btn-primary:hover { background:#00aee6;box-shadow:0 4px 18px rgba(0,195,255,.3); }
+        .btn-ghost  { background:transparent;border:1px solid #2a3040;color:#9ca3af;border-radius:8px;padding:9px 16px;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;font-size:13px; }
+        .btn-ghost:hover { border-color:#00c3ff;color:#fff; }
+        .btn-secondary { background:#1e2430;color:#d1d5db;border-radius:8px;padding:8px 16px;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;font-size:13px; }
+        .btn-secondary:hover { background:#252d3d; }
+
+        /* SCROLLBAR for textarea */
+        textarea { scrollbar-width: thin; scrollbar-color: #374151 #0b0f19; }
+
+        /* GLOW LINE TOP */
+        .glow-top { height:2px;background:linear-gradient(90deg,transparent,#00c3ff44,#00c3ff,#00c3ff44,transparent); }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8">
+<body class="min-h-screen p-4 md:p-6">
+
+<!-- GLOW TOP LINE -->
+<div class="glow-top mb-6 opacity-60"></div>
+
 <div class="max-w-7xl mx-auto">
 
     <!-- HEADER -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-            <img src="https://cdn.areabermain.club/assets/cdn/az9/2025/01/12/20250112/be94591721bee27f10602be64e6b2d5a/logo-9.png" alt="Tool Logo" class="h-12 mb-2">
-            <p class="text-gray-400 text-sm mt-1">Generate beautifully formatted HTML tables for predictions</p>
+            <img src="https://cdn.areabermain.club/assets/cdn/az9/2025/01/12/20250112/be94591721bee27f10602be64e6b2d5a/logo-9.png" alt="Tool Logo" class="h-11 mb-1">
+            <p class="text-gray-500 text-xs">Generate beautifully formatted HTML tables for predictions</p>
         </div>
-        <div class="bg-[#1a1d24] px-4 py-2 rounded-full text-xs text-gray-400 border border-gray-800">Timezone: Asia/Bangkok</div>
+        <div class="flex items-center gap-3">
+            <!-- LIVE PREVIEW TOGGLE -->
+            <div id="lpBadge" class="lp-badge-on flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full cursor-pointer select-none" onclick="toggleLivePreview()">
+                <span id="lpDot" class="w-1.5 h-1.5 rounded-full bg-[#00c3ff] inline-block" style="animation:pdot .8s infinite"></span>
+                <span id="lpLabel">LIVE PREVIEW ON</span>
+            </div>
+            <div class="bg-[#141720] px-3 py-1.5 rounded-full text-xs text-gray-500 border border-[#1f2430]">🕐 Asia/Bangkok</div>
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- LEFT COLUMN -->
-        <div class="lg:col-span-5 space-y-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <!-- ═══ LEFT PANEL ═══ -->
+        <div class="lg:col-span-5 space-y-5">
 
-            <!-- ══ AUTO FETCH CARD ══ -->
-            <div class="bg-[#1a1d24] border border-gray-800 rounded-lg shadow-lg overflow-hidden">
-                <div class="border-b border-gray-800 p-4 flex items-center justify-between">
-                    <h2 class="text-white flex items-center gap-2 font-semibold">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00c3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg>
+            <!-- AUTO FETCH -->
+            <div class="card">
+                <div class="sec-hdr">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00c3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg>
                         Auto Fetch Data
-                        <span id="newDataBadge" class="new-data-badge">DATA BARU</span>
+                        <span id="newDataBadge" class="new-data-badge">BARU</span>
                     </h2>
-                    <div class="flex items-center gap-2 text-xs text-gray-400">
-                        <span>Auto Refresh</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="autoRefreshToggle" checked onchange="toggleAutoRefresh()">
-                            <span class="toggle-slider"></span>
-                        </label>
+                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <span>Auto</span>
+                        <label class="toggle-switch"><input type="checkbox" id="autoRefreshToggle" checked onchange="toggleAutoRefresh()"><span class="toggle-slider"></span></label>
                     </div>
                 </div>
-                <div class="p-5 space-y-4">
-                    <!-- URL Input -->
-                    <div class="space-y-2">
-                        <label class="text-xs text-gray-400">Source URL</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="fetchUrl" value="https://shortq.xyz/prediksibola"
-                                   class="flex-1 bg-[#0b0f19] border border-gray-700 text-white h-9 px-3 text-xs rounded focus:border-[#00c3ff]">
-                            <button onclick="fetchData()" class="bg-[#00c3ff] hover:bg-[#0099cc] text-white px-4 h-9 rounded text-xs font-semibold flex items-center gap-1 transition-colors whitespace-nowrap">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
-                                Fetch
-                            </button>
-                        </div>
+                <div class="p-4 space-y-3">
+                    <div class="flex gap-2">
+                        <input type="text" id="fetchUrl" value="https://shortq.xyz/prediksibola" class="inp flex-1 h-9 px-3 text-xs">
+                        <button onclick="fetchData()" class="btn-primary h-9 px-4 text-xs whitespace-nowrap">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                            Fetch
+                        </button>
                     </div>
-                    <!-- Status Bar -->
-                    <div class="bg-[#0b0f19] border border-gray-700 rounded-lg p-3 flex items-center gap-3">
+
+                    <!-- STATUS BAR -->
+                    <div class="bg-[#0b0f19] border border-[#1f2430] rounded-xl p-3 flex items-center gap-3">
                         <span id="statusDot" class="fetch-status-dot dot-idle"></span>
                         <div class="flex-1 min-w-0">
                             <p id="statusText" class="text-xs text-gray-400 truncate">Siap. Klik Fetch atau tunggu auto refresh.</p>
                             <p id="lastUpdated" class="text-[10px] text-gray-600 mt-0.5">Belum pernah diperbarui</p>
                         </div>
-                        <!-- Countdown Ring -->
-                        <div class="relative flex-shrink-0 w-8 h-8" title="Countdown auto refresh">
+                        <div class="relative flex-shrink-0 w-8 h-8">
                             <svg width="32" height="32" viewBox="0 0 32 32">
                                 <circle cx="16" cy="16" r="13" fill="none" stroke="#1f2937" stroke-width="3"/>
-                                <circle id="countdownRing" cx="16" cy="16" r="13" fill="none"
-                                        stroke="#00c3ff" stroke-width="3"
-                                        stroke-dasharray="81.68" stroke-dashoffset="0"
-                                        stroke-linecap="round" transform="rotate(-90 16 16)"
-                                        style="transition: stroke-dashoffset 1s linear;"/>
+                                <circle id="countdownRing" cx="16" cy="16" r="13" fill="none" stroke="#00c3ff" stroke-width="3" stroke-dasharray="81.68" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 16 16)" style="transition:stroke-dashoffset 1s linear;"/>
                             </svg>
                             <span id="countdownNum" class="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-gray-400">60</span>
                         </div>
                     </div>
-                    <!-- Stats -->
-                    <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="bg-[#0b0f19] border border-gray-800 rounded p-2">
-                            <p class="text-[10px] text-gray-500">Liga</p>
-                            <p id="statLeagues" class="text-sm font-bold text-[#00c3ff]">—</p>
-                        </div>
-                        <div class="bg-[#0b0f19] border border-gray-800 rounded p-2">
-                            <p class="text-[10px] text-gray-500">Match</p>
-                            <p id="statMatches" class="text-sm font-bold text-[#00c3ff]">—</p>
-                        </div>
-                        <div class="bg-[#0b0f19] border border-gray-800 rounded p-2">
-                            <p class="text-[10px] text-gray-500">Cache</p>
-                            <p id="statCache" class="text-sm font-bold text-gray-500">—</p>
-                        </div>
+
+                    <!-- STATS -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="stat-card"><p class="text-[10px] text-gray-500 mb-0.5">Liga</p><p id="statLeagues" class="text-sm font-bold text-[#00c3ff]">—</p></div>
+                        <div class="stat-card"><p class="text-[10px] text-gray-500 mb-0.5">Match</p><p id="statMatches" class="text-sm font-bold text-[#00c3ff]">—</p></div>
+                        <div class="stat-card"><p class="text-[10px] text-gray-500 mb-0.5">Cache</p><p id="statCache" class="text-sm font-bold text-gray-500">—</p></div>
                     </div>
-                    <!-- Proxy Selector -->
-                    <div class="space-y-1">
-                        <label class="text-[10px] text-gray-600">Proxy Prioritas (auto fallback ke proxy lain jika gagal)</label>
-                        <select id="proxySelect" class="w-full bg-[#0b0f19] border border-gray-700 text-gray-400 h-8 px-2 text-xs rounded focus:border-[#00c3ff]">
+
+                    <div>
+                        <label class="text-[10px] text-gray-600 block mb-1">Proxy Prioritas</label>
+                        <select id="proxySelect" class="inp w-full h-8 px-2 text-xs text-gray-400">
                             <option value="allorigins">🔄 Auto Fallback (Recommended)</option>
                             <option value="corsproxy">corsproxy.io (prioritas)</option>
                             <option value="direct">Direct (tanpa proxy)</option>
@@ -135,83 +180,142 @@
                 </div>
             </div>
 
-            <!-- ══ CONFIGURATION CARD ══ -->
-            <div class="bg-[#1a1d24] border border-gray-800 rounded-lg shadow-lg overflow-hidden">
-                <div class="border-b border-gray-800 p-4">
-                    <h2 class="text-white flex items-center gap-2 font-semibold">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00c3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            <!-- CONFIGURATION -->
+            <div class="card">
+                <div class="sec-hdr">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00c3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
                         Configuration
                     </h2>
+                    <span class="live-badge"><span class="live-dot"></span>LIVE</span>
                 </div>
-                <div class="p-5 space-y-4">
-                    <div class="space-y-2">
-                        <label class="text-xs text-gray-400 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
-                            Select Brand
-                        </label>
-                        <select id="brandSelect" onchange="changeBrand()" class="w-full bg-[#0b0f19] border border-gray-700 text-white h-9 px-3 text-sm rounded focus:border-[#00c3ff]">
-                            <option value="TVTOTO">TVTOTO</option>
-                            <option value="MANCINGDUIT">MANCINGDUIT</option>
-                            <option value="FATCAI">FATCAI</option>
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-xs text-gray-400 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                            Match Date (Revisi Tanggal)
-                        </label>
-                        <input type="text" id="configDate" class="w-full bg-[#0b0f19] border border-gray-700 text-white h-9 px-3 text-sm rounded focus:border-[#00c3ff]">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-2">
-                            <label class="text-xs text-gray-400">Background Color</label>
-                            <div class="flex gap-2">
-                                <input type="color" id="configBgColor" value="#990000" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded">
-                                <input type="text" id="configBgColorText" value="#990000" class="bg-[#0b0f19] border border-gray-700 text-white h-8 px-2 text-xs flex-1 rounded focus:border-[#00c3ff]">
+                <div class="p-4 space-y-4">
+
+                    <!-- BRAND CARDS -->
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-2">Select Brand</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div id="card-TVTOTO" class="brand-card sel cursor-pointer rounded-xl p-3 border-2 bg-gradient-to-br from-[#200000] to-[#0e0000] flex items-center gap-2" style="border-color:#cc0000;box-shadow:0 0 14px rgba(204,0,0,0.3)" onclick="selectBrand('TVTOTO')">
+                                <div class="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" style="box-shadow:0 0 6px #ff0000"></div>
+                                <span class="text-red-400 font-bold text-sm tracking-wider">TVTOTO</span>
+                                <span class="ml-auto text-green-400 text-xs font-bold check-TVTOTO">✓</span>
                             </div>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-xs text-gray-400">Text Color</label>
-                            <div class="flex gap-2">
-                                <input type="color" id="configTextColor" value="#ffcc00" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded">
-                                <input type="text" id="configTextColorText" value="#ffcc00" class="bg-[#0b0f19] border border-gray-700 text-white h-8 px-2 text-xs flex-1 rounded focus:border-[#00c3ff]">
+                            <div id="card-MANCINGDUIT" class="brand-card cursor-pointer rounded-xl p-3 border-2 bg-gradient-to-br from-[#001520] to-[#000a12] flex items-center gap-2" style="border-color:#1f2430" onclick="selectBrand('MANCINGDUIT')">
+                                <div class="w-2 h-2 rounded-full bg-cyan-400 flex-shrink-0"></div>
+                                <span class="text-cyan-400 font-bold text-sm tracking-wider">MANCING</span>
+                                <span class="ml-auto text-green-400 text-xs font-bold check-MANCINGDUIT hidden">✓</span>
                             </div>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-xs text-gray-400">Header BG Color</label>
-                            <div class="flex gap-2">
-                                <input type="color" id="configHeaderColor" value="#660000" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded">
-                                <input type="text" id="configHeaderColorText" value="#660000" class="bg-[#0b0f19] border border-gray-700 text-white h-8 px-2 text-xs flex-1 rounded focus:border-[#00c3ff]">
+                            <div id="card-FATCAI" class="brand-card cursor-pointer rounded-xl p-3 border-2 bg-gradient-to-br from-[#141400] to-[#0a0a00] flex items-center gap-2" style="border-color:#1f2430" onclick="selectBrand('FATCAI')">
+                                <div class="w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0"></div>
+                                <span class="text-yellow-300 font-bold text-sm tracking-wider">FATCAI</span>
+                                <span class="ml-auto text-green-400 text-xs font-bold check-FATCAI hidden">✓</span>
                             </div>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-xs text-gray-400">Marquee BG Color</label>
-                            <div class="flex gap-2">
-                                <input type="color" id="configMarqueeColor" value="#660000" class="w-8 h-8 p-0 border-0 bg-transparent cursor-pointer rounded">
-                                <input type="text" id="configMarqueeColorText" value="#660000" class="bg-[#0b0f19] border border-gray-700 text-white h-8 px-2 text-xs flex-1 rounded focus:border-[#00c3ff]">
+                            <div id="card-DEPOBOS" class="brand-card cursor-pointer rounded-xl p-3 border-2 bg-gradient-to-br from-[#001500] to-[#000a00] flex items-center gap-2" style="border-color:#1f2430" onclick="selectBrand('DEPOBOS')">
+                                <div class="w-2 h-2 rounded-full bg-green-400 flex-shrink-0"></div>
+                                <span class="text-green-400 font-bold text-sm tracking-wider">DEPOBOS</span>
+                                <span class="ml-auto text-green-400 text-xs font-bold check-DEPOBOS hidden">✓</span>
                             </div>
                         </div>
                     </div>
+
+                    <div class="sdiv"><span class="text-[9px] text-gray-600 tracking-widest uppercase px-1">Tanggal & Logo</span></div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs text-gray-500 block mb-1">Match Date</label>
+                            <input type="text" id="configDate" class="inp w-full h-9 px-3 text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 block mb-1">⚽ Speed Bola</label>
+                            <select id="ballSpeed" class="inp w-full h-9 px-2 text-xs text-gray-300" onchange="livePreviewTrigger()">
+                                <option value="slow">🐢 Lambat banget</option>
+                                <option value="normal" selected>🚶 Normal</option>
+                                <option value="fast">🏃 Cepat</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- CUSTOM LOGO URL -->
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-1">🖼️ Custom Logo URL <span class="text-gray-600">(opsional)</span></label>
+                        <input type="text" id="customLogo" placeholder="https://... (kosongkan = pakai logo brand)" class="inp w-full h-9 px-3 text-xs text-gray-400" oninput="livePreviewTrigger()">
+                    </div>
+
+                    <div class="sdiv"><span class="text-[9px] text-gray-600 tracking-widest uppercase px-1">Warna — Custom Bebas</span></div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1.5">🎨 Background</label>
+                            <div class="flex gap-2 items-center">
+                                <div class="swatch-wrap">
+                                    <div class="swatch-box" id="swBg" style="background:#990000"></div>
+                                    <input type="color" id="configBgColor" value="#990000" oninput="syncColor('Bg',this.value);livePreviewTrigger()">
+                                </div>
+                                <input type="text" id="configBgText" value="#990000" oninput="syncColorText('Bg',this.value)" class="inp h-8 px-2 text-xs flex-1 font-mono">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1.5">✏️ Text</label>
+                            <div class="flex gap-2 items-center">
+                                <div class="swatch-wrap">
+                                    <div class="swatch-box" id="swText" style="background:#ffcc00"></div>
+                                    <input type="color" id="configTextColor" value="#ffcc00" oninput="syncColor('Text',this.value);livePreviewTrigger()">
+                                </div>
+                                <input type="text" id="configTextText" value="#ffcc00" oninput="syncColorText('Text',this.value)" class="inp h-8 px-2 text-xs flex-1 font-mono">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1.5">📋 Header</label>
+                            <div class="flex gap-2 items-center">
+                                <div class="swatch-wrap">
+                                    <div class="swatch-box" id="swHeader" style="background:#660000"></div>
+                                    <input type="color" id="configHeaderColor" value="#660000" oninput="syncColor('Header',this.value);livePreviewTrigger()">
+                                </div>
+                                <input type="text" id="configHeaderText" value="#660000" oninput="syncColorText('Header',this.value)" class="inp h-8 px-2 text-xs flex-1 font-mono">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-gray-400 block mb-1.5">📢 Marquee</label>
+                            <div class="flex gap-2 items-center">
+                                <div class="swatch-wrap">
+                                    <div class="swatch-box" id="swMarquee" style="background:#660000"></div>
+                                    <input type="color" id="configMarqueeColor" value="#660000" oninput="syncColor('Marquee',this.value);livePreviewTrigger()">
+                                </div>
+                                <input type="text" id="configMarqueeText" value="#660000" oninput="syncColorText('Marquee',this.value)" class="inp h-8 px-2 text-xs flex-1 font-mono">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CUSTOM MARQUEE TEXT -->
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-1">📝 Custom Teks Marquee <span class="text-gray-600">(opsional)</span></label>
+                        <input type="text" id="customMarquee" placeholder="Kosongkan = teks otomatis" class="inp w-full h-9 px-3 text-xs text-gray-400" oninput="livePreviewTrigger()">
+                    </div>
+
+                    <button onclick="resetColors()" class="w-full py-2 rounded-lg border border-[#2a3040] text-gray-500 text-xs hover:border-[#00c3ff] hover:text-[#00c3ff] transition-colors flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+                        Reset ke default brand
+                    </button>
                 </div>
             </div>
 
-            <!-- ══ INPUT CARD ══ -->
-            <div class="bg-[#1a1d24] border border-gray-800 rounded-lg shadow-lg overflow-hidden">
-                <div class="border-b border-gray-800 p-4">
-                    <h2 class="text-white flex items-center gap-2 font-semibold">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00c3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
+            <!-- INPUT DATA -->
+            <div class="card">
+                <div class="sec-hdr">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00c3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
                         Input Data
                     </h2>
+                    <!-- Line counter -->
+                    <span id="lineCount" class="text-[10px] text-gray-600 bg-[#0b0f19] px-2 py-0.5 rounded-full border border-[#1f2430]">0 baris</span>
                 </div>
-                <div class="p-5 space-y-4">
-                    <div class="bg-[#0b0f19] border border-gray-700 rounded p-3 text-xs text-gray-400 space-y-1">
-                        <p class="text-[#00c3ff] font-semibold">✅ Format yang didukung (termasuk shortq.xyz):</p>
+                <div class="p-4 space-y-3">
+                    <div class="bg-[#0b0f19] border border-[#1f2430] rounded-lg p-3 text-xs text-gray-500 space-y-1">
+                        <p class="text-[#00c3ff] font-semibold text-xs">✅ Format yang didukung:</p>
                         <p>• <code class="text-green-400">01/03 21:00 WIB Tim A vs Tim B 1-2</code></p>
-                        <p>• <code class="text-green-400">01/03 21 : 00 WIB Tim A vs Tim B 1 : 2</code> <span class="text-yellow-400">(format shortq)</span></p>
-                        <p>• <code class="text-green-400">01/03 21:00 WIB Tim A vs Tim B 1 1/4 : 0</code></p>
-                        <p>• <code class="text-green-400">01/03 21:00 WIB Tim A vs Tim B 1/2 : 0</code></p>
+                        <p>• <code class="text-green-400">01/03 21 : 00 WIB Tim A vs Tim B 1 : 2</code></p>
                     </div>
-                    <textarea id="inputText" class="w-full bg-[#0b0f19] border border-gray-700 text-gray-300 font-mono text-xs min-h-[300px] p-3 rounded resize-none focus:border-[#00c3ff]" placeholder="Paste data di sini atau gunakan Auto Fetch di atas...">ENGLISH PREMIER LEAGUE
+                    <textarea id="inputText" oninput="updateLineCount();livePreviewTrigger()" class="inp w-full text-gray-300 font-mono text-xs min-h-[260px] p-3 rounded-lg resize-none" placeholder="Paste data di sini atau gunakan Auto Fetch...">ENGLISH PREMIER LEAGUE
 13/09 18:30 WIB Arsenal vs Nottingham Forest 2-0
 13/09 21:00 WIB Bournemouth AFC vs Brighton &amp; Hove Albion 1-2
 13/09 21:00 WIB Crystal Palace vs Sunderland 2-1
@@ -219,639 +323,587 @@
 ITALY SERIE A
 13/09 20:00 WIB Cagliari vs Parma Calcio 1-2
 13/09 23:00 WIB Juventus vs Inter Milan 1-1</textarea>
+
                     <div class="grid grid-cols-2 gap-3">
-                        <button onclick="generateHtml()" class="bg-[#00c3ff] hover:bg-[#0099cc] text-white font-semibold py-2 px-4 rounded flex items-center justify-center gap-2 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                        <button onclick="generateHtml()" class="btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                             Generate
                         </button>
-                        <button onclick="clearInput()" class="bg-transparent border border-gray-700 text-gray-400 hover:bg-[#2a2e36] hover:text-white py-2 px-4 rounded flex items-center justify-center gap-2 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
+                        <button onclick="clearInput()" class="btn-ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
                             Clear
                         </button>
                     </div>
-                    <div id="actionButtons" class="grid grid-cols-2 gap-3 pt-2 hidden">
-                        <button onclick="copyHtml()" class="bg-[#2a2e36] text-white hover:bg-[#353a45] py-2 px-4 rounded flex items-center justify-center gap-2 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+
+                    <div id="actionButtons" class="grid grid-cols-2 gap-3 hidden">
+                        <button onclick="copyHtml()" class="btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                             Copy HTML
                         </button>
-                        <button onclick="downloadHtml()" class="bg-[#2a2e36] text-white hover:bg-[#353a45] py-2 px-4 rounded flex items-center justify-center gap-2 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        <button onclick="downloadHtml()" class="btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                             Download
                         </button>
                     </div>
                 </div>
             </div>
-        </div><!-- /left col -->
+        </div>
 
-        <!-- RIGHT COLUMN: PREVIEW -->
+        <!-- ═══ PREVIEW PANEL ═══ -->
         <div class="lg:col-span-7">
-            <div class="bg-[#1a1d24] border border-gray-800 rounded-lg shadow-lg overflow-hidden h-full flex flex-col min-h-[600px]">
-                <div class="border-b border-gray-800 p-4 flex justify-between items-center">
-                    <h2 class="text-white flex items-center gap-2 font-semibold">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00c3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg>
+            <div class="card flex flex-col">
+                <div class="sec-hdr">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00c3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg>
                         Preview
                     </h2>
-                    <div class="flex bg-[#0b0f19] rounded border border-gray-800 p-1">
-                        <button onclick="setPreviewMode('preview')" id="btnPreview" class="px-3 py-1 text-xs rounded bg-[#00c3ff] text-white">Preview</button>
-                        <button onclick="setPreviewMode('code')" id="btnCode" class="px-3 py-1 text-xs rounded text-gray-400 hover:text-white">Source</button>
+                    <div class="flex items-center gap-2">
+                        <!-- HTML SIZE BADGE -->
+                        <span id="htmlSizeBadge" class="text-[10px] text-gray-600 hidden bg-[#0b0f19] px-2 py-0.5 rounded-full border border-[#1f2430]">— KB</span>
+                        <div class="flex bg-[#0b0f19] rounded-lg border border-[#1f2430] p-0.5">
+                            <button onclick="setPreviewMode('preview')" id="btnPreview" class="px-3 py-1 text-xs rounded-md bg-[#00c3ff] text-black font-semibold transition-all">Preview</button>
+                            <button onclick="setPreviewMode('code')" id="btnCode" class="px-3 py-1 text-xs rounded-md text-gray-400 hover:text-white transition-all">Source</button>
+                        </div>
                     </div>
                 </div>
-                <div class="flex-1 bg-[#0b0f19] relative overflow-hidden p-4">
-                    <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-gray-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="opacity-20 mb-4"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m10 13-2 2 2 2"/><path d="m14 17 2-2-2-2"/></svg>
-                        <p>Generate HTML to see preview</p>
+                <div class="bg-[#0b0f19] relative p-3" style="height:calc(100vh - 120px)">
+                    <!-- EMPTY STATE -->
+                    <div id="emptyState" class="flex flex-col items-center justify-center text-gray-700 h-full">
+                        <div class="text-5xl mb-4 opacity-20">⚽</div>
+                        <p class="text-sm">Klik Generate untuk melihat preview</p>
+                        <p class="text-xs mt-1 opacity-60">Atau aktifkan Live Preview untuk update otomatis</p>
                     </div>
-                    <div id="previewContainer" class="hidden w-full h-full bg-white rounded-lg overflow-hidden shadow-inner">
-                        <iframe id="previewFrame" class="w-full h-full border-0" style="min-height:560px"></iframe>
+                    <!-- PREVIEW FRAME -->
+                    <div id="previewContainer" class="hidden w-full h-full rounded-lg overflow-hidden">
+                        <iframe id="previewFrame" class="w-full h-full border-0 bg-white rounded-lg" style="display:block"></iframe>
                     </div>
-                    <div id="codeContainer" class="hidden w-full h-full bg-[#0b0f19] border border-gray-800 rounded p-4 overflow-auto custom-scrollbar">
+                    <!-- CODE VIEW -->
+                    <div id="codeContainer" class="hidden w-full h-full bg-[#080b10] border border-[#1f2430] rounded-lg p-4 overflow-auto custom-scrollbar">
                         <pre id="codeBlock" class="text-xs font-mono text-green-400 whitespace-pre-wrap break-all"></pre>
                     </div>
                 </div>
             </div>
         </div>
-    </div><!-- /grid -->
-</div><!-- /max-w -->
 
+    </div>
+</div>
 <div id="toast"></div>
 
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- JAVASCRIPT -->
+<!-- ════════════════════════════════════════════════════════ -->
 <script>
-// ═══════════════════════════════════
-// STATE
-// ═══════════════════════════════════
-let generatedHtml  = "";
-let autoRefreshOn  = true;
-let countdownSec   = 60;
-let countdownTimer = null;
-let fetchCache     = { text: null, hash: null, ts: null };
-const REFRESH_SECS = 60;
-const CIRCUMFERENCE = 2 * Math.PI * 13; // r=13 → ~81.68
+'use strict';
 
-// ═══════════════════════════════════
-// BRAND CONFIG
-// ═══════════════════════════════════
+// ── STATE ──
+let generatedHtml = '', autoRefreshOn = true, countdownSec = 60, countdownTimer = null;
+let fetchCache = {text:null,hash:null,ts:null};
+let livePreviewEnabled = true;
+let livePreviewDebounce = null;
+const REFRESH_SECS = 60, CIRCUMFERENCE = 2*Math.PI*13;
+let currentBrand = 'TVTOTO';
+
+// ── BRAND CONFIG ──
 const BRAND_CONFIG = {
     TVTOTO: {
         logo: 'https://jamkos-a.com/tvtoto/logotvtoto.jpg',
-        colors: { bg:'#990000', text:'#ffcc00', header:'#660000', marquee:'#660000' },
-        title: 'PREDIKSI TVTOTO'
+        colors: {bg:'#8b0000',text:'#ffcc00',header:'#5a0000',marquee:'#5a0000'},
+        title: 'PREDIKSI TVTOTO',
+        accent: [204,0,0]
     },
     MANCINGDUIT: {
         logo: 'https://mancingduit.com/resources/images/logo.png',
-        colors: { bg:'#0097b2', text:'#ffffff', header:'#006d80', marquee:'#004d5a' },
-        title: 'PREDIKSI MANCINGDUIT'
+        colors: {bg:'#006080',text:'#ffffff',header:'#004060',marquee:'#003050'},
+        title: 'PREDIKSI MANCINGDUIT',
+        accent: [0,195,255]
     },
     FATCAI: {
         logo: 'https://cdn.areabermain.club/assets/cdn/az8/2025/12/21/20251221/3efa72027f4b37ceb0e92d3df7bd7144/logo-fatcai99-1.png',
-        colors: { bg:'#fafe06', text:'#000000', header:'#b7b922', marquee:'#efff0f' },
-        title: 'PREDIKSI FATCAI'
+        colors: {bg:'#b8b800',text:'#000000',header:'#888800',marquee:'#909000'},
+        title: 'PREDIKSI FATCAI',
+        accent: [250,254,6]
+    },
+    DEPOBOS: {
+        logo: 'https://depobos.com/resources/images/logo.png',
+        colors: {bg:'#1a6600',text:'#ffffff',header:'#0d4400',marquee:'#0d4400'},
+        title: 'PREDIKSI DEPOBOS',
+        accent: [100,200,0]
     }
 };
 
-function changeBrand() {
-    const brand = document.getElementById('brandSelect').value;
-    const cfg   = BRAND_CONFIG[brand];
-    if (!cfg) return;
-    updateColorInput('configBgColor',    'configBgColorText',    cfg.colors.bg);
-    updateColorInput('configTextColor',  'configTextColorText',  cfg.colors.text);
-    updateColorInput('configHeaderColor','configHeaderColorText',cfg.colors.header);
-    updateColorInput('configMarqueeColor','configMarqueeColorText',cfg.colors.marquee);
-    showToast('🎨 Switched to ' + brand + ' theme');
-}
-function updateColorInput(pid, tid, val) {
-    document.getElementById(pid).value = val;
-    document.getElementById(tid).value = val;
+const BRAND_CARD_STYLES = {
+    TVTOTO:      {border:'#cc0000', glow:'rgba(204,0,0,0.3)'},
+    MANCINGDUIT: {border:'#00c3ff', glow:'rgba(0,195,255,0.3)'},
+    FATCAI:      {border:'#fafe06', glow:'rgba(250,254,6,0.25)'},
+    DEPOBOS:     {border:'#64c800', glow:'rgba(100,200,0,0.3)'},
+};
+
+// ── LIVE PREVIEW TOGGLE ──
+function toggleLivePreview() {
+    livePreviewEnabled = !livePreviewEnabled;
+    const badge = document.getElementById('lpBadge');
+    const label = document.getElementById('lpLabel');
+    const dot   = document.getElementById('lpDot');
+    if (livePreviewEnabled) {
+        badge.className = 'lp-badge-on flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full cursor-pointer select-none';
+        label.textContent = 'LIVE PREVIEW ON';
+        dot.style.background = '#00c3ff';
+        dot.style.animation = 'pdot .8s infinite';
+        showToast('✅ Live Preview: ON');
+    } else {
+        badge.className = 'lp-badge-off flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full cursor-pointer select-none';
+        label.textContent = 'LIVE PREVIEW OFF';
+        dot.style.background = '#6b7280';
+        dot.style.animation = 'none';
+        showToast('⏸ Live Preview: OFF');
+    }
 }
 
-// ═══════════════════════════════════
-// AUTO DATE
-// ═══════════════════════════════════
-const MONTHS = ["JANUARI","FEBRUARI","MARET","APRIL","MEI","JUNI","JULI","AGUSTUS","SEPTEMBER","OKTOBER","NOVEMBER","DESEMBER"];
-(function initDate() {
-    const t=new Date(), t2=new Date(t); t2.setDate(t.getDate()+1);
+function livePreviewTrigger() {
+    if (!livePreviewEnabled) return;
+    clearTimeout(livePreviewDebounce);
+    livePreviewDebounce = setTimeout(() => {
+        if (document.getElementById('inputText').value.trim()) generateHtml(true);
+    }, 400);
+}
+
+// ── LINE COUNTER ──
+function updateLineCount() {
+    const lines = document.getElementById('inputText').value.split('\n').filter(l=>l.trim()).length;
+    document.getElementById('lineCount').textContent = lines + ' baris';
+}
+
+// ── BRAND SELECT ──
+function selectBrand(brand) {
+    currentBrand = brand;
+    Object.keys(BRAND_CONFIG).forEach(b => {
+        const card = document.getElementById('card-'+b);
+        const chk  = document.querySelector('.check-'+b);
+        card.style.borderColor = '#1f2430';
+        card.style.boxShadow   = 'none';
+        card.classList.remove('sel');
+        if (chk) chk.classList.add('hidden');
+    });
+    const card = document.getElementById('card-'+brand);
+    const chk  = document.querySelector('.check-'+brand);
+    const st   = BRAND_CARD_STYLES[brand];
+    card.style.borderColor = st.border;
+    card.style.boxShadow   = '0 0 14px '+st.glow;
+    card.classList.add('sel');
+    if (chk) chk.classList.remove('hidden');
+    const cfg = BRAND_CONFIG[brand];
+    applyColor('Bg',      cfg.colors.bg);
+    applyColor('Text',    cfg.colors.text);
+    applyColor('Header',  cfg.colors.header);
+    applyColor('Marquee', cfg.colors.marquee);
+    showToast('🎨 Switched to '+brand);
+    livePreviewTrigger();
+}
+
+function applyColor(key, val) {
+    const map = {
+        Bg:      ['configBgColor',     'configBgText',     'swBg'],
+        Text:    ['configTextColor',   'configTextText',   'swText'],
+        Header:  ['configHeaderColor', 'configHeaderText', 'swHeader'],
+        Marquee: ['configMarqueeColor','configMarqueeText','swMarquee'],
+    };
+    const [pid, tid, sid] = map[key];
+    document.getElementById(pid).value = val;
+    document.getElementById(tid).value = val;
+    document.getElementById(sid).style.background = val;
+}
+
+// ── COLOR SYNC ──
+function syncColor(key, val) {
+    const map = {
+        Bg:['configBgText','swBg'], Text:['configTextText','swText'],
+        Header:['configHeaderText','swHeader'], Marquee:['configMarqueeText','swMarquee']
+    };
+    document.getElementById(map[key][0]).value = val;
+    document.getElementById(map[key][1]).style.background = val;
+}
+function syncColorText(key, val) {
+    if (!/^#[0-9a-fA-F]{3,6}$/.test(val)) return;
+    const map = {
+        Bg:['configBgColor','swBg'], Text:['configTextColor','swText'],
+        Header:['configHeaderColor','swHeader'], Marquee:['configMarqueeColor','swMarquee']
+    };
+    document.getElementById(map[key][0]).value = val;
+    document.getElementById(map[key][1]).style.background = val;
+    livePreviewTrigger();
+}
+function resetColors() {
+    selectBrand(currentBrand);
+    showToast('🔄 Reset ke default '+currentBrand);
+}
+
+// ── AUTO DATE ──
+const MONTHS=['JANUARI','FEBRUARI','MARET','APRIL','MEI','JUNI','JULI','AGUSTUS','SEPTEMBER','OKTOBER','NOVEMBER','DESEMBER'];
+(function(){
+    const t=new Date(),t2=new Date(t); t2.setDate(t.getDate()+1);
     const d1=String(t.getDate()).padStart(2,'0'), d2=String(t2.getDate()).padStart(2,'0');
     const m1=MONTHS[t.getMonth()], m2=MONTHS[t2.getMonth()];
     const y=t.getFullYear(), y2=t2.getFullYear();
     let ds;
     if(t.getMonth()===t2.getMonth()&&y===y2) ds=d1+' - '+d2+' '+m1+' '+y;
-    else if(y===y2)                          ds=d1+' '+m1+' - '+d2+' '+m2+' '+y;
-    else                                     ds=d1+' '+m1+' '+y+' - '+d2+' '+m2+' '+y2;
+    else if(y===y2) ds=d1+' '+m1+' - '+d2+' '+m2+' '+y;
+    else ds=d1+' '+m1+' '+y+' - '+d2+' '+m2+' '+y2;
     document.getElementById('configDate').value=ds;
 })();
 
-function syncColor(pid,tid){
-    const p=document.getElementById(pid),t=document.getElementById(tid);
-    p.addEventListener('input',e=>t.value=e.target.value);
-    t.addEventListener('input',e=>p.value=e.target.value);
-}
-syncColor('configBgColor','configBgColorText');
-syncColor('configTextColor','configTextColorText');
-syncColor('configHeaderColor','configHeaderColorText');
-syncColor('configMarqueeColor','configMarqueeColorText');
-
-// ═══════════════════════════════════
-// PARSER (supports all formats)
-// ═══════════════════════════════════
-function preNormalize(line) {
+// ── PARSER ──
+function preNorm(line){
     return line.trim()
         .replace(/(\d{2})\s*:\s*(\d{2})(?=\s+WIB|\s+[A-Z])/g,'$1:$2')
         .replace(/(\d{2})\s*\/\s*(\d{2})/g,'$1/$2')
         .replace(/\s+/g,' ');
 }
-const SCORE_PART    = '(?:\\d+\\s+\\d+/\\d+|\\d+/\\d+|\\d+)';
-const SCORE_PATTERN = '('+SCORE_PART+'\\s*[:\\-]\\s*'+SCORE_PART+')';
-const MATCH_REGEX   = new RegExp(
-    '^(\\d{2}[/\\-]\\d{2})\\s+(\\d{2}:\\d{2})(?:\\s*WIB)?\\s+(.+?)\\s+(?:vs\\.?|VS\\.?|\\u2013|-)\\s+(.+?)\\s+'+SCORE_PATTERN+'\\s*$','i'
-);
-function parseMatchLine(line)  { return preNormalize(line).match(MATCH_REGEX); }
-function normalizeScore(score) { return score.replace(/\s*([:\-])\s*/,' $1 ').trim(); }
-function formatMatchLine(line) {
-    const c=preNormalize(line);
-    if(!c) return "";
-    const m=c.match(MATCH_REGEX);
-    if(m) return m[1]+' '+m[2]+' WIB '+m[3].trim()+' vs '+m[4].trim()+' '+normalizeScore(m[5]);
-    return c;
-}
+const SP='(?:\\d+\\s+\\d+/\\d+|\\d+/\\d+|\\d+)';
+const MATCH_RE=new RegExp('^(\\d{2}[/\\-]\\d{2})\\s+(\\d{2}:\\d{2})(?:\\s*WIB)?\\s+(.+?)\\s+(?:vs\\.?|VS\\.?|\\u2013|-)\\s+(.+?)\\s+('+SP+'\\s*[:\\-]\\s*'+SP+')\\s*$','i');
+function parseMatch(l){return preNorm(l).match(MATCH_RE);}
+function normScore(s){return s.replace(/\s*([:\-])\s*/,' $1 ').trim();}
+function fmtLine(l){const c=preNorm(l);if(!c)return'';const m=c.match(MATCH_RE);if(m)return m[1]+' '+m[2]+' WIB '+m[3].trim()+' vs '+m[4].trim()+' '+normScore(m[5]);return c;}
+
 document.getElementById('inputText').addEventListener('paste',function(e){
     e.preventDefault();
     const raw=(e.clipboardData||window.clipboardData).getData('text');
-    const fmt=raw.split('\n').map(formatMatchLine).filter(l=>l!=="").join('\n');
-    const s=this.selectionStart,en=this.selectionEnd;
+    const fmt=raw.split('\n').map(fmtLine).filter(l=>l).join('\n');
+    const s=this.selectionStart, en=this.selectionEnd;
     this.value=this.value.substring(0,s)+fmt+this.value.substring(en);
-    const cnt=raw.split('\n').filter(l=>parseMatchLine(l.trim().replace(/\s+/g,' '))).length;
-    showToast('✅ Auto-formatted: '+cnt+' match(es) detected.');
+    updateLineCount();
+    showToast('✅ Auto-formatted: '+raw.split('\n').filter(l=>parseMatch(l)).length+' match(es)');
+    livePreviewTrigger();
 });
 
-// ═══════════════════════════════════
-// TOAST
-// ═══════════════════════════════════
-function showToast(msg) {
+// ── TOAST ──
+function showToast(msg){
     const x=document.getElementById('toast');
     x.textContent=msg; x.className='show';
     setTimeout(()=>x.className=x.className.replace('show',''),3000);
 }
 
-// ═══════════════════════════════════════════════════════
-//  AUTO FETCH ENGINE
-// ═══════════════════════════════════════════════════════
-
-/** FNV-like hash for change detection */
-function hashStr(str) {
-    let h=0x811c9dc5;
-    for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=(h*0x01000193)>>>0; }
-    return h.toString(16);
-}
-
-/** Build proxy URL */
-// ── MULTI-PROXY FALLBACK LIST ──
-// Dicoba urutan 1→2→3→4 sampai ada yang berhasil
-const PROXY_LIST = [
-    {
-        name: 'AllOrigins',
-        build: url => 'https://api.allorigins.win/get?url=' + encodeURIComponent(url),
-        extract: async res => { const j = await res.json(); return j.contents || ''; }
-    },
-    {
-        name: 'corsproxy.io',
-        build: url => 'https://corsproxy.io/?' + encodeURIComponent(url),
-        extract: async res => res.text()
-    },
-    {
-        name: 'ThingProxy',
-        build: url => 'https://thingproxy.freeboard.io/fetch/' + url,
-        extract: async res => res.text()
-    },
-    {
-        name: 'allorigins.hexlet',
-        build: url => 'https://allorigins.hexlet.app/get?disableCache=true&url=' + encodeURIComponent(url),
-        extract: async res => { const j = await res.json(); return j.contents || ''; }
-    }
+// ── FETCH ENGINE ──
+function hashStr(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h*0x01000193)>>>0;}return h.toString(16);}
+const PROXIES=[
+    {name:'AllOrigins',  b:u=>'https://api.allorigins.win/get?url='+encodeURIComponent(u), x:async r=>{const j=await r.json();return j.contents||'';}},
+    {name:'corsproxy.io',b:u=>'https://corsproxy.io/?'+encodeURIComponent(u),             x:async r=>r.text()},
+    {name:'ThingProxy',  b:u=>'https://thingproxy.freeboard.io/fetch/'+u,                 x:async r=>r.text()},
+    {name:'hexlet',      b:u=>'https://allorigins.hexlet.app/get?disableCache=true&url='+encodeURIComponent(u),x:async r=>{const j=await r.json();return j.contents||'';}}
 ];
-
-async function fetchWithFallback(targetUrl) {
-    // Check if user manually selected a proxy
-    const manualProxy = document.getElementById('proxySelect').value;
-
-    // Build ordered list: manual choice first, then rest as fallback
-    let ordered = [...PROXY_LIST];
-    if (manualProxy === 'direct') {
-        // Try direct first, then proxies
-        ordered = [
-            { name:'Direct', build:u=>u, extract: async r=>r.text() },
-            ...PROXY_LIST
-        ];
-    } else if (manualProxy === 'corsproxy') {
-        const idx = ordered.findIndex(p=>p.name==='corsproxy.io');
-        if (idx>0) { const [item]=ordered.splice(idx,1); ordered.unshift(item); }
-    }
-    // allorigins stays first by default
-
-    let lastError = '';
-    for (const proxy of ordered) {
-        try {
-            setStatus('loading', '⏳ Mencoba via ' + proxy.name + '...');
-            const proxyUrl = proxy.build(targetUrl);
-            const ctrl = new AbortController();
-            const timer = setTimeout(() => ctrl.abort(), 10000);
-            const res = await fetch(proxyUrl, { signal: ctrl.signal, cache: 'no-store' });
-            clearTimeout(timer);
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const html = await proxy.extract(res);
-            if (!html || html.trim().length < 50) throw new Error('Respons kosong');
-            console.log('[Fetch] Berhasil via', proxy.name);
+async function fetchWithFallback(url){
+    const mp=document.getElementById('proxySelect').value;
+    let ord=[...PROXIES];
+    if(mp==='direct') ord=[{name:'Direct',b:u=>u,x:async r=>r.text()},...PROXIES];
+    else if(mp==='corsproxy'){const i=ord.findIndex(p=>p.name==='corsproxy.io');if(i>0){const[it]=ord.splice(i,1);ord.unshift(it);}}
+    for(const p of ord){
+        try{
+            setSt('loading','⏳ Mencoba via '+p.name+'...');
+            const c=new AbortController();setTimeout(()=>c.abort(),10000);
+            const r=await fetch(p.b(url),{signal:c.signal,cache:'no-store'});
+            if(!r.ok)throw new Error('HTTP '+r.status);
+            const html=await p.x(r);
+            if(!html||html.length<50)throw new Error('Respons kosong');
             return html;
-        } catch(e) {
-            lastError = proxy.name + ': ' + e.message;
-            console.warn('[Fetch] Gagal via', proxy.name, '—', e.message);
-        }
+        }catch(e){console.warn(p.name,e.message);}
     }
-    throw new Error('Semua proxy gagal. Terakhir: ' + lastError);
+    throw new Error('Semua proxy gagal');
 }
-
-/** Parse fetched HTML → clean lines (only league headers + match lines) */
-function parseHtmlToLines(html) {
-    const doc = (new DOMParser()).parseFromString(html,'text/html');
-
-    // Remove ALL noisy HTML elements
-    [
-        'script','style','nav','header','footer','button','a',
-        'img','noscript','iframe','form','h1','h2','h3','h4','h5','h6',
-        '.header','.title','.btn','.button','.nav','.menu','.sidebar',
-        '.ads','.ad','.banner','.popup','.modal','.verified'
-    ].forEach(sel=>{
-        try { doc.querySelectorAll(sel).forEach(el=>el.remove()); } catch(e){}
+function parseLines(html){
+    const doc=(new DOMParser()).parseFromString(html,'text/html');
+    ['script','style','nav','header','footer','button','a','img','noscript','iframe','form','h1','h2','h3','h4','h5','h6'].forEach(s=>{try{doc.querySelectorAll(s).forEach(e=>e.remove());}catch(e){}});
+    const allLines=(doc.body.innerText||doc.body.textContent||'').split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>1);
+    const KL=['ENGLISH PREMIER LEAGUE','EPL','LA LIGA','SERIE A','ITALY SERIE A','BUNDESLIGA','LIGUE 1','EREDIVISIE','PRIMEIRA LIGA','CHAMPIONS LEAGUE','UEFA CHAMPIONS LEAGUE','EUROPA LEAGUE','CARABAO CUP','FA CUP','DFB POKAL','COPA DEL REY','COPPA ITALIA','MLS','J1 LEAGUE','K LEAGUE','LIGA MX','BRAZIL SERIE A','SUPER LIG','AFC CHAMPIONS LEAGUE','LIGA 1','BRI LIGA 1','WORLD CUP','FRIENDLY','UEFA NATIONS LEAGUE'];
+    const NE=new Set(['TVTOTO','MANCINGDUIT','FATCAI','DEPOBOS','VERIFIED PAGE','HOME','MENU','LOGIN','REGISTER','DAFTAR','PROMO','BONUS','DEPOSIT']);
+    const NP=/klik|disini|whatsapp|telegram|instagram|copyright|privacy/i;
+    const LL=/^[A-Z][A-Z0-9 \.\-\/&']{2,69}$/;
+    const result=[];let col=false,lwl=false;
+    allLines.forEach(line=>{
+        const n=preNorm(line),up=line.toUpperCase().trim(),im=!!n.match(MATCH_RE);
+        const ik=KL.some(l=>up===l||up.startsWith(l));
+        if(!col&&(im||ik))col=true;if(!col)return;
+        if(im){result.push(n);lwl=false;return;}
+        const isn=(NE.has(up)||NP.test(line)||/https?:|www\.|@/.test(line)||/^\d+$/.test(line));
+        const ill=(line.length>=3&&line.length<=70&&LL.test(up)&&!isn);
+        if(ill&&!lwl){result.push(up);lwl=true;}else if(!ill&&!im){lwl=false;}
     });
-
-    const rawText = (doc.body.innerText || doc.body.textContent || "");
-    const allLines = rawText.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>1);
-
-    // ── KNOWN REAL LEAGUE NAMES ──
-    const KNOWN_LEAGUES = [
-        'ENGLISH PREMIER LEAGUE','EPL','LA LIGA','SPAIN LA LIGA','SERIE A','ITALY SERIE A',
-        'BUNDESLIGA','GERMANY BUNDESLIGA','GERMANY BUNDESLIGA 2','LIGUE 1','FRANCE LIGUE 1',
-        'EREDIVISIE','PRIMEIRA LIGA','CHAMPIONS LEAGUE','UEFA CHAMPIONS LEAGUE',
-        'EUROPA LEAGUE','UEFA EUROPA LEAGUE','CONFERENCE LEAGUE',
-        'CARABAO CUP','FA CUP','DFB POKAL','COPA DEL REY','COPPA ITALIA',
-        'MLS','J1 LEAGUE','JAPAN J1','JAPAN J1 100 YEAR VISION LEAGUE',
-        'K LEAGUE','LIGA MX','BRAZIL SERIE A','ARGENTINA PRIMERA',
-        'SUPER LEAGUE','SUPER LIG','TURKISH SUPER LIG',
-        'SCOTTISH PREMIERSHIP','BELGIAN PRO LEAGUE',
-        'AFC CHAMPIONS LEAGUE','AFC CUP',
-        'PIALA INDONESIA','LIGA 1','BRI LIGA 1','LIGA 2',
-        'SEA GAMES','PIALA AFF','PIALA ASIA','WORLD CUP',
-        'FRIENDLY','INTERNATIONAL FRIENDLY','UEFA NATIONS LEAGUE',
-    ];
-
-    // ── NOISE: exact brand/site names to always skip ──
-    const NOISE_EXACT = new Set([
-        'KOLONI4D','KOLONI','TVTOTO','MANCINGDUIT','FATCAI',
-        'VERIFIED PAGE','VERIFIED','HOME','MENU','LOGIN','REGISTER',
-        'DAFTAR','MASUK','CHAT','LIVE CHAT','CS','CONTACT',
-        'INFO','PROMO','BONUS','DEPOSIT','WITHDRAW','WD',
-        'PREDIKSI BOLA TERKINI','JADWAL BOLA TERKINI',
-        'SELAMAT DATANG','UPDATE PREDIKSI',
-    ]);
-
-    const NOISE_PATTERN = /klik|disini|akses resmi|whatsapp|telegram|instagram|facebook|twitter|copyright|privacy|syarat|ketentuan|about|tentang|beranda|follow us|share|subscribe/i;
-    const LEAGUE_LIKE   = /^[A-Z][A-Z0-9 \.\-\/&']{2,69}$/;
-
-    const result = [];
-    let collecting    = false;
-    let lastWasLeague = false;
-
-    allLines.forEach(line => {
-        const norm    = preNormalize(line);
-        const upper   = line.toUpperCase().trim();
-        const isMatch = !!norm.match(MATCH_REGEX);
-
-        // Only start collecting after first real match line OR known league
-        const isKnownLeague = KNOWN_LEAGUES.some(l => upper === l || upper.startsWith(l));
-        if (!collecting && (isMatch || isKnownLeague)) collecting = true;
-        if (!collecting) return;
-
-        if (isMatch) {
-            result.push(norm);
-            lastWasLeague = false;
-            return;
-        }
-
-        const isNoise = (
-            NOISE_EXACT.has(upper) ||
-            NOISE_PATTERN.test(line) ||
-            /https?:|www\.|@/.test(line) ||
-            /^\d+$/.test(line)
-        );
-
-        const looksLikeLeague = (
-            line.length >= 3 && line.length <= 70 &&
-            LEAGUE_LIKE.test(upper) && !isNoise
-        );
-
-        if (looksLikeLeague && !lastWasLeague) {
-            result.push(upper);
-            lastWasLeague = true;
-        } else if (!looksLikeLeague && !isMatch) {
-            lastWasLeague = false;
-        }
-    });
-
     return result;
 }
-
-/** Update status indicator */
-function setStatus(state, text) {
-    document.getElementById('statusDot').className='fetch-status-dot dot-'+state;
-    document.getElementById('statusText').textContent=text;
+function setSt(st,txt){document.getElementById('statusDot').className='fetch-status-dot dot-'+st;document.getElementById('statusText').textContent=txt;}
+function updateStats(lines){
+    let lg=0,mt=0;
+    lines.forEach(l=>{const n=preNorm(l);if(n.match(MATCH_RE))mt++;else if(n.length>3&&n.length<80)lg++;});
+    document.getElementById('statLeagues').textContent=lg||'—';
+    document.getElementById('statMatches').textContent=mt||'—';
 }
-
-/** Count stats from lines */
-function updateStats(lines) {
-    let leagues=0, matches=0;
-    lines.forEach(l=>{
-        const n=preNormalize(l);
-        if(n.match(MATCH_REGEX)) matches++;
-        else if(n.length>3&&n.length<80&&!/^\d{2}[\/\-]/.test(n)) leagues++;
-    });
-    document.getElementById('statLeagues').textContent=leagues||'—';
-    document.getElementById('statMatches').textContent=matches||'—';
-}
-
-/** MAIN FETCH */
-async function fetchData() {
-    const targetUrl=document.getElementById('fetchUrl').value.trim();
-    if(!targetUrl) return;
-
-    setStatus('loading','⏳ Memuat data...');
+async function fetchData(){
+    const url=document.getElementById('fetchUrl').value.trim();if(!url)return;
+    setSt('loading','⏳ Memuat data...');
     document.getElementById('newDataBadge').classList.remove('show');
-
-    try {
-        const rawHtml = await fetchWithFallback(targetUrl);
-
-        const lines   = parseHtmlToLines(rawHtml);
-        const combined= lines.join('\n');
-        const newHash = hashStr(combined);
-        const isNew   = newHash !== fetchCache.hash;
-
-        if(isNew){
-            fetchCache={text:combined, hash:newHash, ts:Date.now()};
+    try{
+        const raw=await fetchWithFallback(url);
+        const lines=parseLines(raw),combined=lines.join('\n'),newHash=hashStr(combined);
+        if(newHash!==fetchCache.hash){
+            fetchCache={text:combined,hash:newHash,ts:Date.now()};
             document.getElementById('inputText').value=combined;
             document.getElementById('newDataBadge').classList.add('show');
             setTimeout(()=>document.getElementById('newDataBadge').classList.remove('show'),8000);
-            updateStats(lines);
-            setStatus('success','✅ Data berhasil diperbarui — '+lines.length+' baris');
-            const matchCount=lines.filter(l=>parseMatchLine(l)).length;
-            showToast('🔄 Data baru: '+matchCount+' pertandingan terdeteksi!');
-        } else {
-            setStatus('success','✅ Data sama (tidak ada perubahan)');
-        }
-
-        document.getElementById('lastUpdated').textContent=
-            'Diperbarui: '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-        document.getElementById('statCache').textContent=
-            new Date(fetchCache.ts).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-
-    } catch(err){
-        const isTimeout=err.name==='AbortError';
-        const msg=isTimeout?'⚠️ Timeout — server lambat':'❌ Gagal: '+err.message;
-        setStatus('error',msg);
-        showToast(msg+(fetchCache.text?' (pakai cache terakhir)':''));
-        if(fetchCache.text){
-            document.getElementById('lastUpdated').textContent='Menggunakan cache — update terakhir '+
-                new Date(fetchCache.ts).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
-        }
+            updateStats(lines);setSt('success','✅ Data diperbarui — '+lines.length+' baris');
+            showToast('🔄 '+lines.filter(l=>parseMatch(l)).length+' pertandingan!');
+            updateLineCount();
+            livePreviewTrigger();
+        }else{setSt('success','✅ Data sama (tidak ada perubahan)');}
+        document.getElementById('lastUpdated').textContent='Diperbarui: '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        document.getElementById('statCache').textContent=new Date(fetchCache.ts).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    }catch(err){
+        const msg='❌ Gagal: '+err.message;setSt('error',msg);showToast(msg);
     }
 }
 
-// ═══════════════════════════════════
-// COUNTDOWN RING + AUTO REFRESH
-// ═══════════════════════════════════
-function updateCountdown(){
-    const ring=document.getElementById('countdownRing');
-    const num =document.getElementById('countdownNum');
-    const pct =countdownSec/REFRESH_SECS;
-    ring.style.strokeDashoffset=CIRCUMFERENCE*(1-pct);
-    num.textContent=countdownSec;
-    ring.style.stroke=countdownSec<=10?'#f59e0b':'#00c3ff';
+// ── COUNTDOWN ──
+function updateCd(){
+    const r=document.getElementById('countdownRing'),n=document.getElementById('countdownNum');
+    r.style.strokeDashoffset=CIRCUMFERENCE*(1-countdownSec/REFRESH_SECS);
+    n.textContent=countdownSec; r.style.stroke=countdownSec<=10?'#f59e0b':'#00c3ff';
 }
-function startCountdown(){
-    if(countdownTimer) clearInterval(countdownTimer);
-    countdownSec=REFRESH_SECS;
-    updateCountdown();
+function startCd(){
+    if(countdownTimer)clearInterval(countdownTimer);
+    countdownSec=REFRESH_SECS; updateCd();
     countdownTimer=setInterval(()=>{
-        countdownSec--;
-        updateCountdown();
-        if(countdownSec<=0){
-            countdownSec=REFRESH_SECS;
-            if(autoRefreshOn) fetchData();
-        }
+        countdownSec--; updateCd();
+        if(countdownSec<=0){countdownSec=REFRESH_SECS; if(autoRefreshOn)fetchData();}
     },1000);
 }
 function toggleAutoRefresh(){
     autoRefreshOn=document.getElementById('autoRefreshToggle').checked;
-    const ring=document.getElementById('countdownRing');
-    ring.style.stroke=autoRefreshOn?'#00c3ff':'#374151';
-    document.getElementById('countdownNum').style.color=autoRefreshOn?'':'#6b7280';
-    showToast(autoRefreshOn?'🔄 Auto Refresh: ON (setiap 60 detik)':'⏸ Auto Refresh: OFF');
+    document.getElementById('countdownRing').style.stroke=autoRefreshOn?'#00c3ff':'#374151';
+    showToast(autoRefreshOn?'🔄 Auto Refresh: ON':'⏸ Auto Refresh: OFF');
 }
 
-// ═══════════════════════════════════
-// INIT on page load
-// ═══════════════════════════════════
+// ── INIT ──
 window.addEventListener('DOMContentLoaded',()=>{
-    startCountdown();
+    selectBrand('TVTOTO');
+    updateLineCount();
+    startCd();
     fetchData();
+    // Live preview for date/speed changes
+    document.getElementById('configDate').addEventListener('input', livePreviewTrigger);
+    document.getElementById('ballSpeed').addEventListener('change', livePreviewTrigger);
 });
 
-// ═══════════════════════════════════
-// GENERATE HTML
-// ═══════════════════════════════════
-function generateHtml() {
-    const inputText   =document.getElementById('inputText').value;
-    const date        =document.getElementById('configDate').value;
-    const bgColor     =document.getElementById('configBgColor').value;
-    const textColor   =document.getElementById('configTextColor').value;
-    const headerColor =document.getElementById('configHeaderColor').value;
-    const marqueeColor=document.getElementById('configMarqueeColor').value;
-    const brand       =document.getElementById('brandSelect').value;
-    const bc          =BRAND_CONFIG[brand];
-    if(!inputText.trim()){ alert("Paste data terlebih dahulu atau gunakan Auto Fetch di atas."); return; }
+// ════════════════════════════════════════════════════════
+// GENERATE HTML OUTPUT
+// ════════════════════════════════════════════════════════
+function h2rgb(hex){
+    const r=parseInt(hex.slice(1,3),16)||0, g=parseInt(hex.slice(3,5),16)||0, b=parseInt(hex.slice(5,7),16)||0;
+    return r+','+g+','+b;
+}
 
-    const lines=inputText.split("\n");
-    let html=`<!doctype html>
+// ── BALL SPEED CONFIG ──
+const BALL_SPEEDS = {
+    slow:   { dur: [18, 28], interval: 1800, size: [10, 18] },
+    normal: { dur: [10, 18], interval: 1000, size: [10, 18] },
+    fast:   { dur: [4,  10], interval: 400,  size: [10, 20] }
+};
+
+function generateHtml(silent=false) {
+    const inputText   = document.getElementById('inputText').value;
+    const date        = document.getElementById('configDate').value;
+    const bgColor     = document.getElementById('configBgColor').value;
+    const textColor   = document.getElementById('configTextColor').value;
+    const headerColor = document.getElementById('configHeaderColor').value;
+    const mqColor     = document.getElementById('configMarqueeColor').value;
+    const brand       = currentBrand;
+    const bc          = BRAND_CONFIG[brand];
+    const customLogo  = document.getElementById('customLogo').value.trim();
+    const customMq    = document.getElementById('customMarquee').value.trim();
+    const speedKey    = document.getElementById('ballSpeed').value;
+    const spd         = BALL_SPEEDS[speedKey];
+    const logoSrc     = customLogo || bc.logo;
+    const mqText      = customMq  || ` SELAMAT DATANG DI PREDIKSI BOLA ${brand} &nbsp;|&nbsp; ${bc.title} &nbsp;|&nbsp; ${date} `;
+
+    if (!inputText.trim()) {
+        if (!silent) alert('Paste data terlebih dahulu!');
+        return;
+    }
+
+    const bgRgb  = h2rgb(bgColor);
+    const hdrRgb = h2rgb(headerColor);
+
+    const premiumStyle = `
+    body{background:linear-gradient(145deg,rgba(${bgRgb},1) 0%,rgba(${bgRgb},0.8) 45%,rgba(0,0,0,0.97) 100%) !important;background-attachment:fixed!important}
+    .container{background:rgba(0,0,0,0.38)!important;border:1px solid rgba(${bgRgb},0.22)!important;box-shadow:0 0 60px rgba(${bgRgb},0.12),0 20px 60px rgba(0,0,0,.55)!important}
+    .header{border-bottom:2px solid rgba(${bgRgb},0.55)!important;position:relative}
+    .header::after{content:'';position:absolute;bottom:-2px;left:10%;right:10%;height:2px;background:linear-gradient(90deg,transparent,rgba(${bgRgb},0.9),transparent);filter:blur(2px)}
+    .league{border:1px solid rgba(${bgRgb},0.18)!important;box-shadow:0 4px 18px rgba(${bgRgb},0.1)!important;background:linear-gradient(155deg,rgba(0,0,0,0.28),rgba(0,0,0,0.48))!important}
+    .league-title{background:linear-gradient(90deg,rgba(${hdrRgb},1) 0%,rgba(${bgRgb},0.75) 50%,rgba(${hdrRgb},1) 100%)!important;border-bottom:1px solid rgba(${bgRgb},0.35)!important;text-shadow:0 0 14px rgba(${bgRgb},0.5)!important;letter-spacing:.08em!important}
+    th{background:linear-gradient(180deg,rgba(${hdrRgb},0.95),rgba(${hdrRgb},0.7))!important;border-bottom:1px solid rgba(${bgRgb},0.28)!important}
+    tr:nth-child(even){background-color:rgba(${bgRgb},0.06)!important}
+    tr:hover{background-color:rgba(${bgRgb},0.14)!important;transition:background .2s}
+    .marquee{background:linear-gradient(90deg,rgba(${hdrRgb},1) 0%,rgba(${bgRgb},0.65) 50%,rgba(${hdrRgb},1) 100%)!important;border:1px solid rgba(${bgRgb},0.28)!important;text-shadow:0 0 10px rgba(${bgRgb},0.55)!important;box-shadow:0 2px 18px rgba(${bgRgb},0.12)!important}
+    `;
+
+    const lines = inputText.split('\n');
+    let html = `<!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>${bc.title}</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    .snowflake{position:fixed;top:-10px;z-index:9999;color:#fff;font-size:1em;pointer-events:none;user-select:none;animation-name:fall;animation-timing-function:linear;}
-    @keyframes fall{0%{transform:translateY(0);opacity:1}100%{transform:translateY(100vh);opacity:.3}}
+    /* ── FALLING BALL ANIMATION ── */
+    .ball{
+      position:fixed;top:-30px;z-index:9999;
+      pointer-events:none;user-select:none;
+      animation:fallBall linear forwards;
+    }
+    @keyframes fallBall{
+      0%   {transform:translateY(0)   rotate(0deg);  opacity:0.9}
+      10%  {opacity:1}
+      80%  {opacity:0.7}
+      100% {transform:translateY(110vh) rotate(540deg);opacity:0}
+    }
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Poppins',sans-serif;background-color:${bgColor};color:${textColor};padding:0;line-height:1.6}
-    .container{max-width:1000px;margin:0 auto;background-color:rgba(0,0,0,.3);border-radius:15px;padding:20px;box-shadow:0 0 20px rgba(0,0,0,.5)}
-    .header{text-align:center;margin-bottom:30px;padding-bottom:15px;border-bottom:2px solid ${textColor}}
-    .header img{max-width:200px;margin-bottom:10px}
-    .header .date{font-size:18px;color:#fff;font-weight:600}
-    .marquee{background-color:${marqueeColor};color:${textColor};padding:10px;margin-bottom:25px;border-radius:5px;font-weight:700;text-align:center;font-size:18px;text-transform:uppercase;overflow:hidden;white-space:nowrap}
-    .marquee p{display:inline-block;animation:marquee 15s linear infinite;padding-left:100%}
-    @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-    .league{margin-bottom:30px;background:linear-gradient(135deg,rgba(0,0,0,.2),rgba(0,0,0,.4));border-radius:10px;overflow:hidden;box-shadow:0 5px 15px rgba(0,0,0,.3)}
-    .league-title{background:linear-gradient(90deg,${headerColor},${bgColor});color:#fff;padding:12px 15px;font-size:18px;font-weight:700;text-align:center;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.2)}
+    body{font-family:'Poppins',sans-serif;background-color:${bgColor};color:${textColor};padding:0;line-height:1.6;min-height:100vh}
+    .container{max-width:1000px;margin:0 auto;background:rgba(0,0,0,.32);border-radius:14px;padding:20px;box-shadow:0 0 24px rgba(0,0,0,.5);position:relative;z-index:1}
+    .header{text-align:center;margin-bottom:28px;padding-bottom:14px;border-bottom:2px solid rgba(255,255,255,0.25)}
+    .header img{max-width:200px;margin-bottom:8px}
+    .header .date{font-size:17px;color:#fff;font-weight:600;margin-top:6px}
+    .marquee{background-color:${mqColor};color:${textColor};padding:10px;margin-bottom:24px;border-radius:8px;font-weight:700;font-size:17px;text-transform:uppercase;overflow:hidden;white-space:nowrap}
+    .marquee p{display:inline-block;animation:mq 22s linear infinite;padding-left:100%}
+    @keyframes mq{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+    .league{margin-bottom:26px;border-radius:12px;overflow:hidden}
+    .league-title{background:linear-gradient(90deg,${headerColor},${bgColor});color:#fff;padding:12px 16px;font-size:16px;font-weight:700;text-align:center;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.15)}
     table{width:100%;border-collapse:collapse;table-layout:fixed}
-    th{background-color:${headerColor};color:${textColor};padding:12px;text-align:center;font-weight:600;vertical-align:middle}
-    td{padding:10px 12px;font-weight:700;text-align:center;vertical-align:middle;border-bottom:1px solid rgba(255,255,255,.1);word-wrap:break-word}
-    tr:nth-child(even){background-color:rgba(0,0,0,.2)}
-    tr:hover{background-color:rgba(255,255,255,.1)}
-    @media(max-width:768px){.container{padding:15px}th,td{padding:8px 10px;font-size:14px}}
+    th{background-color:${headerColor};color:${textColor};padding:11px;text-align:center;font-weight:600;vertical-align:middle;font-size:13px}
+    td{padding:10px 11px;font-weight:600;text-align:center;vertical-align:middle;border-bottom:1px solid rgba(255,255,255,.07);word-wrap:break-word;font-size:13px;transition:background .2s}
+    tr:nth-child(even){background-color:rgba(0,0,0,.18)}
+    tr:hover{background-color:rgba(255,255,255,.07)}
+    @media(max-width:768px){.container{padding:10px}th,td{padding:7px 5px;font-size:11px}.league-title{font-size:13px}}
+    ${premiumStyle}
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <img src="${bc.logo}" alt="Logo">
+      <img src="${logoSrc}" alt="${brand}">
       <div class="date">${date}</div>
     </div>
-    <div class="marquee"><p>SELAMAT DATANG DI PREDIKSI BOLA TERBARU ${brand} | ${bc.title} ${date}</p></div>`;
+    <div class="marquee"><p>${mqText}</p></div>`;
 
-    let isTableOpen=false;
-    lines.forEach(line=>{
-        const trimmed=line.trim(); if(!trimmed) return;
-        const normalized=preNormalize(trimmed);
-        const m=normalized.match(MATCH_REGEX);
-        if(m){
-            const [_,d,t,tA,tB,score]=m;
-            if(!isTableOpen){
-                html+='\n    <div class="league"><div class="league-title">MATCHES</div><table><thead><tr><th style="width:25%">Waktu</th><th style="width:50%">Pertandingan</th><th style="width:25%">Prediksi</th></tr></thead><tbody>';
-                isTableOpen=true;
+    let open = false;
+    lines.forEach(line => {
+        const tr = line.trim(); if (!tr) return;
+        const nm = preNorm(tr), m = nm.match(MATCH_RE);
+        if (m) {
+            const [,d,t,tA,tB,score] = m;
+            if (!open) {
+                html += '\n<div class="league"><div class="league-title">⚽ MATCHES</div><table><thead><tr><th style="width:23%">Waktu</th><th style="width:54%">Pertandingan</th><th style="width:23%">Prediksi</th></tr></thead><tbody>';
+                open = true;
             }
-            html+=`<tr><td>${d} ${t} WIB</td><td>${tA.trim()} vs ${tB.trim()}</td><td>${normalizeScore(score)}</td></tr>`;
+            html += `\n<tr><td>${d} ${t} WIB</td><td>${tA.trim()} vs ${tB.trim()}</td><td>${normScore(score)}</td></tr>`;
         } else {
-            if(isTableOpen){ html+='</tbody></table></div>'; isTableOpen=false; }
-            html+='\n    <div class="league"><div class="league-title">'+trimmed+'</div><table><thead><tr><th style="width:25%">Waktu</th><th style="width:50%">Pertandingan</th><th style="width:25%">Prediksi</th></tr></thead><tbody>';
-            isTableOpen=true;
+            if (open) { html += '\n</tbody></table></div>'; open = false; }
+            html += '\n<div class="league"><div class="league-title">⚽ '+tr+'</div><table><thead><tr><th style="width:23%">Waktu</th><th style="width:54%">Pertandingan</th><th style="width:23%">Prediksi</th></tr></thead><tbody>';
+            open = true;
         }
     });
-    if(isTableOpen) html+='</tbody></table></div>';
-    html+=`
+    if (open) html += '\n</tbody></table></div>';
+
+    // ── BOLA JATUH PELAN ──
+    html += `
   </div>
   <script>
-    function createSnowflake(){const s=document.createElement("div");s.classList.add("snowflake");s.textContent="⚽\uFE0E";s.style.left=Math.random()*window.innerWidth+"px";s.style.fontSize=Math.random()*15+10+"px";s.style.animationDuration=Math.random()*5+5+"s";s.style.opacity=Math.random();document.body.appendChild(s);setTimeout(()=>s.remove(),10000)}
-    setInterval(createSnowflake,500);
+    (function(){
+      var DUR_MIN=${spd.dur[0]}, DUR_MAX=${spd.dur[1]};
+      var SZ_MIN=${spd.size[0]},  SZ_MAX=${spd.size[1]};
+      var INTERVAL=${spd.interval};
+      function rand(a,b){return Math.random()*(b-a)+a;}
+      function spawn(){
+        var el=document.createElement('div');
+        el.className='ball';
+        el.textContent='⚽';
+        el.style.left=rand(0,window.innerWidth-30)+'px';
+        el.style.fontSize=rand(SZ_MIN,SZ_MAX)+'px';
+        var dur=rand(DUR_MIN,DUR_MAX);
+        el.style.animationDuration=dur+'s';
+        el.style.opacity=rand(0.4,0.85);
+        document.body.appendChild(el);
+        setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},dur*1000+500);
+      }
+      setInterval(spawn,INTERVAL);
+      spawn(); // spawn satu langsung saat load
+    })();
   <\/script>
-</body>
-</html>`;
+</body></html>`;
 
-    generatedHtml=html;
+    generatedHtml = html;
     document.getElementById('emptyState').classList.add('hidden');
     document.getElementById('previewContainer').classList.remove('hidden');
     document.getElementById('actionButtons').classList.remove('hidden');
-    document.getElementById('previewFrame').srcdoc=html;
-    document.getElementById('codeBlock').textContent=html;
-    if(document.getElementById('btnCode').classList.contains('bg-[#00c3ff]')) setPreviewMode('code');
-    showToast("✅ HTML generated successfully!");
+    const frame = document.getElementById('previewFrame');
+    frame.srcdoc = html;
+    document.getElementById('codeBlock').textContent = html;
+
+    // HTML size badge
+    const kb = (new Blob([html]).size/1024).toFixed(1);
+    const szBadge = document.getElementById('htmlSizeBadge');
+    szBadge.textContent = kb+' KB';
+    szBadge.classList.remove('hidden');
+
+    setPreviewMode('preview');
+    if (!silent) showToast('✅ '+brand+' HTML generated! ('+kb+' KB)');
 }
 
-// ═══════════════════════════════════
-// PREVIEW / CLEAR / COPY / DOWNLOAD
-// ═══════════════════════════════════
+// ── PREVIEW MODE ──
 function setPreviewMode(mode){
-    const bP=document.getElementById('btnPreview'),bC=document.getElementById('btnCode');
-    const pC=document.getElementById('previewContainer'),cC=document.getElementById('codeContainer');
+    const bP=document.getElementById('btnPreview'), bC=document.getElementById('btnCode');
+    const pC=document.getElementById('previewContainer'), cC=document.getElementById('codeContainer');
     if(mode==='preview'){
-        bP.classList.add('bg-[#00c3ff]','text-white'); bP.classList.remove('text-gray-400');
-        bC.classList.remove('bg-[#00c3ff]','text-white'); bC.classList.add('text-gray-400');
+        bP.className='px-3 py-1 text-xs rounded-md bg-[#00c3ff] text-black font-semibold transition-all';
+        bC.className='px-3 py-1 text-xs rounded-md text-gray-400 hover:text-white transition-all';
         if(generatedHtml){pC.classList.remove('hidden');cC.classList.add('hidden');}
-    } else {
-        bC.classList.add('bg-[#00c3ff]','text-white'); bC.classList.remove('text-gray-400');
-        bP.classList.remove('bg-[#00c3ff]','text-white'); bP.classList.add('text-gray-400');
+    }else{
+        bC.className='px-3 py-1 text-xs rounded-md bg-[#00c3ff] text-black font-semibold transition-all';
+        bP.className='px-3 py-1 text-xs rounded-md text-gray-400 hover:text-white transition-all';
         if(generatedHtml){pC.classList.add('hidden');cC.classList.remove('hidden');}
     }
 }
+
+// ── CLEAR / COPY / DOWNLOAD ──
 function clearInput(){
-    document.getElementById('inputText').value=""; generatedHtml="";
+    document.getElementById('inputText').value=''; generatedHtml='';
     document.getElementById('emptyState').classList.remove('hidden');
     document.getElementById('previewContainer').classList.add('hidden');
     document.getElementById('codeContainer').classList.add('hidden');
     document.getElementById('actionButtons').classList.add('hidden');
+    document.getElementById('htmlSizeBadge').classList.add('hidden');
+    document.getElementById('lineCount').textContent='0 baris';
 }
 function copyHtml(){
-    if(!generatedHtml) return;
-    navigator.clipboard.writeText(generatedHtml).then(()=>showToast("✅ Copied to clipboard!"));
+    if(!generatedHtml)return;
+    navigator.clipboard.writeText(generatedHtml).then(()=>showToast('✅ HTML berhasil di-copy!'));
 }
 function downloadHtml(){
-    if(!generatedHtml) return;
-    const a=document.createElement("a");
+    if(!generatedHtml)return;
+    const a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([generatedHtml],{type:'text/html'}));
-    a.download=document.getElementById('brandSelect').value.toLowerCase()+'-prediksi.html';
+    a.download=currentBrand.toLowerCase()+'-prediksi.html';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-}
-// ====== ANTI VIEW SOURCE & INSPECT PROTECTION ======
-
-// Block Ctrl+U, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+S, F12
-document.addEventListener("keydown", function (e) {
-// Ctrl+U (View Source)
-if (e.ctrlKey && e.key.toLowerCase() === "u") {
-e.preventDefault();
-return false;
+    showToast('⬇️ File didownload!');
 }
 
-// Ctrl+Shift+I (Inspect)
-if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "i") {
-e.preventDefault();
-return false;
-}
-
-// Ctrl+Shift+J (Console)
-if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "j") {
-e.preventDefault();
-return false;
-}
-
-// Ctrl+S (Save Page)
-if (e.ctrlKey && e.key.toLowerCase() === "s") {
-e.preventDefault();
-return false;
-}
-
-// F12 (DevTools)
-if (e.key === "F12") {
-e.preventDefault();
-return false;
-}
+// ── ANTI INSPECT ──
+document.addEventListener('keydown',function(e){
+    if(e.ctrlKey&&e.key.toLowerCase()==='u'){e.preventDefault();return false;}
+    if(e.ctrlKey&&e.shiftKey&&['i','j'].includes(e.key.toLowerCase())){e.preventDefault();return false;}
+    if(e.ctrlKey&&e.key.toLowerCase()==='s'){e.preventDefault();return false;}
+    if(e.key==='F12'){e.preventDefault();return false;}
 });
-
-// Block Klik Kanan (Right Click)
-document.addEventListener("contextmenu", function (e) {
-e.preventDefault();
-});
-
-// Deteksi DevTools terbuka (bonus proteksi)
-(function () {
-function detectDevTools() {
-const threshold = 160;
-if (
-window.outerWidth - window.innerWidth > threshold ||
-window.outerHeight - window.innerHeight > threshold
-) {
-document.body.innerHTML = `
-<div style="
-display:flex;
-align-items:center;
-justify-content:center;
-height:100vh;
-background:#0f0505;
-color:#D4AF37;
-font-family:monospace;
-font-size:24px;
-text-align:center;">
-Developer Tools Terdeteksi<br>Akses Diblokir
-</div>
-`;
-}
-}
-setInterval(detectDevTools, 1000);
-})();
+document.addEventListener('contextmenu',function(e){e.preventDefault();});
+setInterval(function(){
+    if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160)
+        document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f0505;color:#D4AF37;font-family:monospace;font-size:22px;text-align:center">Developer Tools Terdeteksi<br>Akses Diblokir</div>';
+},1000);
 </script>
 </body>
 </html>
