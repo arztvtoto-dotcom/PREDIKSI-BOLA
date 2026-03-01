@@ -797,13 +797,13 @@ function generateHtml(silent=false) {
         if (m) {
             const [,d,t,tA,tB,score] = m;
             if (!open) {
-                html += '\n<div class="league"><div class="league-title">⚽ MATCHES</div><table><thead><tr><th style="width:23%">Waktu</th><th style="width:54%">Pertandingan</th><th style="width:23%">Prediksi</th></tr></thead><tbody>';
+                html += '\n<div class="league"><div class="league-title"> MATCHES</div><table><thead><tr><th style="width:23%">Waktu</th><th style="width:54%">Pertandingan</th><th style="width:23%">Prediksi</th></tr></thead><tbody>';
                 open = true;
             }
             html += `\n<tr><td>${d} ${t} WIB</td><td>${tA.trim()} vs ${tB.trim()}</td><td>${normScore(score)}</td></tr>`;
         } else {
             if (open) { html += '\n</tbody></table></div>'; open = false; }
-            html += '\n<div class="league"><div class="league-title">⚽ '+tr+'</div><table><thead><tr><th style="width:23%">Waktu</th><th style="width:54%">Pertandingan</th><th style="width:23%">Prediksi</th></tr></thead><tbody>';
+            html += '\n<div class="league"><div class="league-title"> '+tr+'</div><table><thead><tr><th style="width:23%">Waktu</th><th style="width:54%">Pertandingan</th><th style="width:23%">Prediksi</th></tr></thead><tbody>';
             open = true;
         }
     });
